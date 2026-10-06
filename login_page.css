@@ -10,6 +10,16 @@
 .light-green { color: #d3e8b0; }
 .beige-coton { color: rgb(247, 242, 229); }
 
+.centre {
+    text-align: center;
+}
+
+.nom {
+    text-align: right;
+    color: rgb(37, 75, 12);
+    font-size: 0.8rem;
+}
+
 
 /* =====================  TELEPHONE  ===================== */
 
@@ -19,21 +29,47 @@
   box-sizing: border-box;
 }
 
+body {
+    background-color: #f7f2e5;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 header {
     background-color: #68923f;
     margin-top: 0;
     min-height: 130px;
 }
 
-footer {
-    background-color: #d3e8b0;
-    margin: 0;
-    min-height: 100px;
+main {
+    flex: 1;
+    margin: 10px;
 }
 
-body {
-    background-color: #f7f2e5;
+footer {
+    background-color: #d3e8b0;
+    padding: 1.2rem 1.5rem;
+    min-height: 100px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
 }
+
+footer a {
+    color: rgb(37, 75, 12);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Taille titre */
 
 h1 { 
     font-size: 3rem;
@@ -42,7 +78,7 @@ h1 {
 }
 
 h2 { 
-    font-size: 3rem;
+    font-size: 2rem;
     text-align: center;
     margin-bottom: 1rem;
 }
@@ -56,13 +92,13 @@ h3 {
 
 .item {
     display: grid;
-    grid-template-columns: 150px 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
     /* colonne de gauche */
     
     .item-gauche {
-        line-height: 1;
+        line-height: 2;
     }
 
     /* colonne de droite */
@@ -71,4 +107,95 @@ h3 {
         position: relative;
         border-left: 2px solid rgb(0, 0, 0);
         padding: 0 0 1.8rem 1.8rem;
+        line-height: 2;
     }
+
+/* Design bouton */
+
+.bouton {
+    display: inline-block;
+    padding: 0.4rem 1.4rem;
+    background-color: #68923f;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Change de couleur au survol */
+
+.bouton:hover {
+    background-color: rgb(37, 75, 12);
+}
+
+/* Déroulement des formulaires */
+
+.formulaire {
+    display: grid;
+    gap: 0.3rem;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: left;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.4s ease;
+}
+
+.formulaire.ouvert {
+    max-height: 1200px;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+.formulaire input,
+.formulaire select {
+    padding: 0.4rem;
+    border: 1px solid #68923f;
+    border-radius: 6px;
+    background-color: white;
+    font: inherit;
+}
+
+.formulaire .bouton {
+    margin-top: 1rem;
+    justify-self: start;
+}
+
+/* Form employeur caché par défaut */
+
+.employeur {
+    display: none;
+}
+
+.employeur.visible {
+    display: grid;
+    gap: 0.3rem;
+}
+
+/* Agrandissement colonne sélectionnée */
+
+.item:has(.formulaire.ouvert){
+    grid-template-columns: 1fr;
+}
+
+/* inscription ouvert */
+
+.item:has(#form-inscription.ouvert) .item-droite {
+    display: none;
+}
+
+/* connexion ouvert */
+
+.item:has(#form-connexion.ouvert) .item-gauche {
+    display: none;
+}
+
+/* trait de séparation inexistant */
+
+.item:has(#form-connexion.ouvert) .item-droite {
+    border-left: none;
+    padding-left: 0;
+}
