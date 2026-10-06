@@ -71,13 +71,11 @@ function checkuniquekey(){
 
 function get_masterkey_ver() : int{
     $master_key_ver = $_ENV['MASTER_KEY_VERSION'];
-    if (IntlChar::isdigit($master_key_ver) === true){
-        if ($master_key_ver === null){
-            throw new RuntimeException('MASTER_KEY_VERSION_is not set');
-        } elseif($master_key_ver >= 1){
-            return $master_key_ver;
-        }
-    } else {throw new RuntimeException('MASTER_KEY_VER is not a number');}
-
-
+    if (IntlChar::isdigit($master_key_ver) !== true){
+        throw new RuntimeException('MASTER_KEY_VER is not a number');
+    } elseif ($master_key_ver === null){
+        throw new RuntimeException('MASTER_KEY_VERSION_is not set');
+    } elseif($master_key_ver >= 1){
+        return $master_key_ver;
+    }
 }
