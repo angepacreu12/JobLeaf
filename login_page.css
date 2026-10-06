@@ -1,0 +1,74 @@
+.playfair-display {
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.white { color: rgba(255, 255, 255); }
+.dark-green { color: rgb(37, 75, 12);}
+.light-green { color: #d3e8b0; }
+.beige-coton { color: rgb(247, 242, 229); }
+
+
+/* =====================  TELEPHONE  ===================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+    background-color: #68923f;
+    margin-top: 0;
+    min-height: 130px;
+}
+
+footer {
+    background-color: #d3e8b0;
+    margin: 0;
+    min-height: 100px;
+}
+
+body {
+    background-color: #f7f2e5;
+}
+
+h1 { 
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+h2 { 
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+h3 {
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* Placement inscription/connexion */
+
+.item {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+}
+
+    /* colonne de gauche */
+    
+    .item-gauche {
+        line-height: 1;
+    }
+
+    /* colonne de droite */
+
+    .item-droite {
+        position: relative;
+        border-left: 2px solid rgb(0, 0, 0);
+        padding: 0 0 1.8rem 1.8rem;
+    }
