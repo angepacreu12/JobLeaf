@@ -31,7 +31,5 @@ function find_valid_session(PDO $pdo, $token_hash): ?array {
 
     $stmt->execute();
 
-    $session = $stmt->fetch();
-
-    return $session === false ? null: $session;
+    return $stmt->fetchColumn();
 }
