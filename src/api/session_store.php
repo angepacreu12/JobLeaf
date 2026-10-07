@@ -1,6 +1,8 @@
 <?php
 
-function create_session(PDO $pdo,string $user_id,string $token_hash,string $user_agent): ?array {
+declare(strict_types=1);
+
+function create_session(PDO $pdo,string $user_id,string $token_hash,string $user_agent): ?string {
     $stmt = $pdo->prepare(
         "INSERT INTO session (user_id, token_hash, created_at, expires_at, user_agent)
          VALUES (:user_id, :token_hash, now(), now() + interval '1 hour', :user_agent)
@@ -13,13 +15,11 @@ function create_session(PDO $pdo,string $user_id,string $token_hash,string $user
 
     $stmt->execute();
 
-    $row = $stmt->fetch();
-
-    return $row === false ? null: $row;
+    return $stmt->fetchColumn();
 }
 
 
-function find_valid_session(PDO $pdo, $token_hash): ?array {
+function find_valid_session(PDO $pdo,string $token_hash): ?array {
     $stmt = $pdo->prepare(
         'SELECT user_id
          FROM session
