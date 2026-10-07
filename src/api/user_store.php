@@ -1,7 +1,5 @@
 <?php
 
-require_once  dirname(__DIR__, 2) . '/src/api/config.php';
-
 function find_user_by_email_index(PDO $pdo, string $email_index): ?array {
     $stmt = $pdo->prepare(
         'SELECT user_id, password_hash, role, echecs_connexion, bloque_jusqua, email_verifie
