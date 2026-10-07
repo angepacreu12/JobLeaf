@@ -52,7 +52,6 @@ footer {
     background-color: #d3e8b0;
     padding: 1.2rem 1.5rem;
     min-height: 100px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -198,4 +197,11 @@ h3 {
 .item:has(#form-connexion.ouvert) .item-droite {
     border-left: none;
     padding-left: 0;
+}
+
+
+/* ================== A PROPOS ================= */
+
+.article {
+    
 }
