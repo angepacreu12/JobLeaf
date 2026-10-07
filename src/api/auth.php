@@ -26,7 +26,7 @@ function login(PDO $pdo, string $email, string $password, string $user_agent): a
         return ['status' => 429, 'error' => 'Rate limit, try again in 15 minutes'];
     }
     if (check_password($password, $user['password_hash']) === false){
-        record_failed_login($user['user_id']);
+        record_failed_login($pdo, $user['user_id']);
         return ['status' => 401, 'error' => 'Invalid email or password'];
     } 
     reset_failed_logins($pdo, $user['user_id']);
