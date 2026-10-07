@@ -1,6 +1,6 @@
 <?php
-require dirname(__DIR__, 2) . '/vendor/autoload.php';
-require dirname(__DIR__, 2) . '/src/api/config.php';
+require dirname(__DIR__, ) . '/vendor/autoload.php';
+require dirname(__DIR__, ) . '/src/api/config.php';
 
 echo "HMAC key: " . strlen(get_HMAC_key()) . " bytes\n";
 echo "Master key: " . strlen(get_MASTER_key()) . " bytes\n";
