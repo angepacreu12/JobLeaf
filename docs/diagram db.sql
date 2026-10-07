@@ -63,8 +63,8 @@ CREATE TABLE "annonce" (
   "date_publication" timestamptz,
   "date_expiration" timestamptz,
   "entreprise_id" UUID NOT NULL,
-  "created_at" timestampz,
-  "updated_at" timestampz,
+  "created_at" timestamptz,
+  "updated_at" timestamptz,
   "count_annonce" integer NOT NULL DEFAULT 0
 );
 
