@@ -3,6 +3,7 @@
 require_once  dirname(__DIR__, 1) . '/vendor/autoload.php';
 require_once  dirname(__DIR__, 1) . '/src/api/config.php';
 require_once  dirname(__DIR__, 1) . '/src/api/crypto.php';
+require_once  dirname(__DIR__, 1) . '/src/api/user_store.php';
 
 
 echo "HMAC key: " . strlen(get_HMAC_key()) . " bytes\n";
@@ -17,3 +18,6 @@ echo "hash_token for cookie num :" . bin2hex(hash_token("vHquilA0mXnNGMeSHTtkr0b
 echo "hmac email addreess : " . bin2hex(get_hmask_index_mail("admin@jobboard.test")) . "\n";
 
 echo "new token : " . bin2hex(generate_new_token()) . "\n";
+
+$user = find_user_by_email_index($pdo, get_hmask_index_mail('admin@jobboard.test'));
+echo "user session" . var_dump($user) . "\n";
