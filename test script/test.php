@@ -21,7 +21,7 @@ const ADMIN_EMAIL           = 'admin@jobboard.test';
 const ADMIN_PASSWORD        = 'RABr-1VjA-rnVg!';
 const ADMIN_EMAIL_INDEX_HEX = 'ffefe8c0bb1f65048dc115e1';   // first 12 bytes shown in the report
 const SEEDED_COOKIE         = 'vHquilA0mXnNGMeSHTtkr0bVWWQ1SfkUNfQDXB3OdN8';
-const UNVERIFIED_EMAIL    = 'admin@jobboard.test';   // e.g. cand_01's email from the report
+const UNVERIFIED_EMAIL    = 'test@t';   // e.g. cand_01's email from the report
 const UNVERIFIED_PASSWORD = 'RABr-1VjA-rnVg!';
 
 // ---------------------------------------------------------------- tiny test helper
@@ -170,12 +170,12 @@ check('after reset, right password -> 200 again',
       login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script')['status'] === 200);
 
 // --- unverified account
-if (UNVERIFIED_EMAIL === '') {
-    echo "  [SKIP] unverified account: fill UNVERIFIED_EMAIL / UNVERIFIED_PASSWORD\n";
-} else {
-    $unv = login($pdo, UNVERIFIED_EMAIL, UNVERIFIED_PASSWORD, 'test-script');
-    check('unverified email -> 403', $unv['status'] === 403, (string) $unv['status']);
-}
+var_dump(find_user_by_email_index($pdo, get_hmask_index_mail(UNVERIFIED_EMAIL))['email_verifie'] ?? 'KEY MISSING');
+// --- unverified account: temporarily un-verify the admin
+$pdo->prepare('UPDATE users SET email_verifie = false WHERE user_id = :id')->execute([':id' => $uid]);
+$unv = login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script');
+$pdo->prepare('UPDATE users SET email_verifie = true WHERE user_id = :id')->execute([':id' => $uid]);
+check('unverified email -> 403', $unv['status'] === 403, (string) $unv['status']);
 
 // --- cleanup: admin unlocked + no test sessions left behind
 reset_failed_logins($pdo, $uid);
