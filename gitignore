@@ -25,6 +25,7 @@ venv/
 .venv/
 *.egg-info/
 .pytest_cache/
+vendor/
 
 # ---------- Seed outputs ----------
 # Regenerated on every injection, contains plaintext test passwords + raw tokens.
