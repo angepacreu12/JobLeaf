@@ -10,7 +10,7 @@ require_once  dirname(__DIR__, 2) . '/src/api/session_store.php';
 
 
 function login(PDO $pdo, string $email, string $password, string $user_agent): array {
-    $DUMMY_HASH = '$argon2id$v=19$m=65536,t=4,p=1$eTV0MTlBSi52ekhYZmVpQg$rQxpnOa5IZkhiepWBKAEbgkB0KQ3z+uJJzxIE8zMqUE'; //timing discovery protection
+    $DUMMY_HASH = '$argon2id$v=19$m=65536,t=3,p=4$PggBwYNHu5TF8SLYR1WqYw$7IchIP09TuUTmeQL7ytufhPH/wBrX2oxLoOoaNSqHbA'; //timing discovery protection
 
     if (trim($email) === "" || $password === "" ){
         return ['status' => 400, 'error' => 'Invalid email or password'];
