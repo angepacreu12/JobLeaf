@@ -15,11 +15,11 @@ function create_session(PDO $pdo,string $user_id,string $token_hash,string $user
 
     $row = $stmt->fetch();
 
-    return $row === false ? void: $row;
+    return $row === false ? null: $row;
 }
 
 
-function find_valid_session(PDO $pdo, $token_hash): ?boolean {
+function find_valid_session(PDO $pdo, $token_hash): ?array {
     $stmt = $pdo->prepare(
         'SELECT user_id
          FROM session
