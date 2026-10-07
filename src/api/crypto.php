@@ -1,6 +1,7 @@
 <?php
-require dirname(__DIR__, 2) . '/src/api/config.php';
-require dirname(__DIR__,2) .'/src/api/check_time.php';
+require_once  dirname(__DIR__, 2) . '/src/api/config.php';
+require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
+
 function get_hmask_index_mail($email) :string {
     $hmask_key = get_HMAC_key();
     $normalise_mail = strtolower(trim($email));
