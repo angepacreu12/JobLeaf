@@ -19,7 +19,7 @@ function create_session(PDO $pdo,string $user_id,string $token_hash,string $user
 }
 
 
-function find_valid_session(PDO $pdo, $token_hash): ?array {
+function find_valid_session(PDO $pdo, $token_hash): ?string {
     $stmt = $pdo->prepare(
         'SELECT user_id
          FROM session

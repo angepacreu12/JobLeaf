@@ -14,7 +14,7 @@ function check_password($password, string $hash) :bool {
 }
 
 function generate_new_token() {
-    $token = random_bytes(32);
+    $token = bin2hex(random_bytes(32));
     return $token;
 }
 
