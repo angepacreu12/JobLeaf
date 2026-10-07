@@ -12,6 +12,7 @@ require_once $root . '/src/api/config.php';
 require_once $root . '/src/api/crypto.php';
 require_once $root . '/src/api/user_store.php';
 require_once $root . '/src/api/session_store.php';
+require_once $root . '/src/api/check_time.php';
 
 // ---------------------------------------------------------------- expected values
 // Taken from seed/inject_report.json (admin account + one seeded session)
@@ -102,6 +103,21 @@ $del->bindValue(':id', $sessionId);
 $del->execute();
 check('test session deleted', $del->rowCount() === 1);
 
+// ================================================================ 4. SessionStore
+section('Failed logins');
+$uid = (string) $user['user_id'];
+reset_failed_logins($pdo, $uid);
+for ($i = 1; $i <= 5; $i++) {
+    check("failure $i counted", record_failed_login($pdo, $uid) === $i);
+}
+$locked = find_user_by_email_index($pdo, $emailIndex);
+check('locked after 5 failures', isInFuture($locked['bloque_jusqua']));
+reset_failed_logins($pdo, $uid);
+$clean = find_user_by_email_index($pdo, $emailIndex);
+check('reset clears counter + lock',
+      (int) $clean['echecs_connexion'] === 0 && $clean['bloque_jusqua'] === null);
+
 // ================================================================ summary
 printf("\n%d passed, %d failed\n", $passed, $failed);
 exit($failed === 0 ? 0 : 1);
+
