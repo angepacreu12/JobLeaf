@@ -13,6 +13,7 @@ require_once $root . '/src/api/crypto.php';
 require_once $root . '/src/api/user_store.php';
 require_once $root . '/src/api/session_store.php';
 require_once $root . '/src/api/check_time.php';
+require_once $root . '/src/api/auth.php';
 
 // ---------------------------------------------------------------- expected values
 // Taken from seed/inject_report.json (admin account + one seeded session)
@@ -20,6 +21,8 @@ const ADMIN_EMAIL           = 'admin@jobboard.test';
 const ADMIN_PASSWORD        = 'RABr-1VjA-rnVg!';
 const ADMIN_EMAIL_INDEX_HEX = 'ffefe8c0bb1f65048dc115e1';   // first 12 bytes shown in the report
 const SEEDED_COOKIE         = 'vHquilA0mXnNGMeSHTtkr0bVWWQ1SfkUNfQDXB3OdN8';
+const UNVERIFIED_EMAIL    = 'admin@jobboard.test';   // e.g. cand_01's email from the report
+const UNVERIFIED_PASSWORD = 'RABr-1VjA-rnVg!';
 
 // ---------------------------------------------------------------- tiny test helper
 $passed = 0;
@@ -116,6 +119,68 @@ reset_failed_logins($pdo, $uid);
 $clean = find_user_by_email_index($pdo, $emailIndex);
 check('reset clears counter + lock',
       (int) $clean['echecs_connexion'] === 0 && $clean['bloque_jusqua'] === null);
+
+// ================================================================ 5. Login
+section('Login');
+$uid = (string) $user['user_id'];
+reset_failed_logins($pdo, $uid);                       // start clean, even after a crashed run
+
+// --- right password
+$ok = login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script');
+check('admin + right password -> 200', $ok['status'] === 200, (string) $ok['status']);
+check('token returned (64 hex)',
+      isset($ok['token']) && strlen($ok['token']) === 64 && ctype_xdigit($ok['token']));
+check('role returned', ($ok['role'] ?? null) === 'admin');
+check('session usable with that token',
+      isset($ok['token']) && find_valid_session($pdo, hash_token($ok['token'])) !== null);
+
+// --- wrong password
+$wrong = login($pdo, ADMIN_EMAIL, 'wrong-password', 'test-script');
+check('wrong password -> 401', $wrong['status'] === 401);
+$after = find_user_by_email_index($pdo, $emailIndex);
+check('failure counted', (int) $after['echecs_connexion'] === 1,
+      'counter = ' . $after['echecs_connexion']);
+
+// --- unknown email: same answer as wrong password
+$unknown = login($pdo, 'nobody@nowhere.test', 'whatever', 'test-script');
+check('unknown email -> 401', $unknown['status'] === 401);
+check('same message as wrong password', ($unknown['error'] ?? 'a') === ($wrong['error'] ?? 'b'));
+
+// --- empty input
+check('empty email -> 400', login($pdo, '   ', 'x', 'test-script')['status'] === 400);
+check('empty password -> 400', login($pdo, ADMIN_EMAIL, '', 'test-script')['status'] === 400);
+
+// --- timing: unknown email should take about as long as a wrong password
+$t = microtime(true); login($pdo, ADMIN_EMAIL, 'wrong-password', 'test-script'); $tWrong = microtime(true) - $t;
+$t = microtime(true); login($pdo, 'nobody@nowhere.test', 'x', 'test-script');    $tUnknown = microtime(true) - $t;
+$ratio = $tUnknown / max($tWrong, 0.000001);
+check('timing protection (unknown ~ wrong)', $ratio > 0.5 && $ratio < 2,
+      sprintf('wrong %.0f ms, unknown %.0f ms', $tWrong * 1000, $tUnknown * 1000));
+
+// --- lock: 2 failures so far (wrong + timing), 3 more = 5
+for ($i = 0; $i < 3; $i++) {
+    login($pdo, ADMIN_EMAIL, 'wrong-password', 'test-script');
+}
+$locked = login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script');
+check('locked after 5 failures -> 429, even with right password', $locked['status'] === 429,
+      (string) $locked['status']);
+
+reset_failed_logins($pdo, $uid);
+check('after reset, right password -> 200 again',
+      login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script')['status'] === 200);
+
+// --- unverified account
+if (UNVERIFIED_EMAIL === '') {
+    echo "  [SKIP] unverified account: fill UNVERIFIED_EMAIL / UNVERIFIED_PASSWORD\n";
+} else {
+    $unv = login($pdo, UNVERIFIED_EMAIL, UNVERIFIED_PASSWORD, 'test-script');
+    check('unverified email -> 403', $unv['status'] === 403, (string) $unv['status']);
+}
+
+// --- cleanup: admin unlocked + no test sessions left behind
+reset_failed_logins($pdo, $uid);
+$n = $pdo->exec("DELETE FROM session WHERE user_agent = 'test-script'");
+check('test sessions cleaned', $n !== false, "$n deleted");
 
 // ================================================================ summary
 printf("\n%d passed, %d failed\n", $passed, $failed);
