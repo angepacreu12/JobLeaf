@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <title>JobLeaf</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+        <!-- Font titre -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+        <!-- Couleur & police utilisable comme classes -->
+
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+
+        <script src="page_employe.js" defer></script>
+
+    </head>
+    
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>         
+        </header>
+
+        <main>
+
+            <aside class="flex flex-col items-center pt-5 max-w-[100px] min-h-screen bg-vert-clair">
+
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil" 
+                        class="w-[50px] h-[50px] object-cover rounded-full border-[3px] border-white transition-transform duration-200 group-hover:scale-110">
+                </a>
+
+            </aside>
+
+        </main>
+
+    </body>
+    
