@@ -12,6 +12,17 @@ function find_user_by_email_index(PDO $pdo, string $email_index): ?array {
     return $row === false ? null : $row;
 }
 
+function find_user_by_id(PDO $pdo, string $user_id): ?array{
+    $stmt = $pdo->prepare(
+        'SELECT user_id, role
+         FROM users
+         WHERE user_id = :user_id'
+    );
+    $stmt->bindValue(':user_id', $user_id);
+    $stmt->execute();
+    $row = $stmt->fetch();
+    return $row === false ? null : $row;
+}
 function record_failed_login(PDO $pdo, string $user_id): int {
     $stmt = $pdo->prepare(
         "UPDATE users
