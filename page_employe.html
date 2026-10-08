@@ -36,16 +36,35 @@
             <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>         
         </header>
 
-        <main>
+        <main class="flex">
 
-            <aside class="flex flex-col items-center pt-5 max-w-[100px] min-h-screen bg-vert-clair">
+            <aside class="flex flex-col items-center pt-5 min-w-[110px] min-h-screen bg-vert-clair">
 
-                <a href="profil.html" class="group">
-                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil" 
-                        class="w-[50px] h-[50px] object-cover rounded-full border-[3px] border-white transition-transform duration-200 group-hover:scale-110">
-                </a>
+                    <a href="profil.html" class="group">
+                        <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil" 
+                            class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-white transition-transform duration-200 group-hover:scale-110">
+                    </a>
+    
+                    <a href="document.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Documents</a>
+    
+                    <a href="offres.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Mes offres</a>
 
             </aside>
+
+            <div class="flex-1 flex flex-col items-center pl-1 pt-5">
+
+                <form class="flex border rounded-[50px] px-2 py-1 bg-white max-w-[250px] focus-within:border-vert-jobleaf focus-within:ring-2 focus-within:ring-vert-clair">
+
+                    <input type="search" placeholder="Rechercher une annonce" class="outline-none">
+                    <button aria-label="Rechercher">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                    </button>
+
+                </form>
+
+            </div>
 
         </main>
 
