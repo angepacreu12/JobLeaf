@@ -8,7 +8,8 @@ require_once dirname(__DIR__, 2) . '/src/api/http_helper.php';
 $routes = [
     '/api/login'  => ['POST' => 'handle_login'],
     //'/api/health' => ['GET'  => 'handle_health'],
-    '/api/logout'   => ['POST' => 'handle_logout']
+    '/api/logout'   => ['POST' => 'handle_logout'],
+    '/api/me'   => ['get' => 'handle_me']
 ];
 
 
