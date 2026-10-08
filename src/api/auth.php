@@ -55,17 +55,20 @@ function handle_login(): never{
     if ($login_result['status'] === 200){
         set_session_cookie($login_result['token']);
         json_response(200, ['role' => $login_result['role']]);
-
     }
     json_response($login_result['status'], ['error' => $login_result['error']]);
 }
 
-function hendle_logout(): never{
-    $body = read_json_body();
-    if ($body === null){
+function handle_logout(): never{
+    $cookie = $_COOKIE[SESSION_COOKIE] ?? null;
+
+    if ($cookie === null || $cookie === ""){
         json_response(400, ['error' => 'Invalid JSON']);
     }
-    if (find_valid_session($body['token_hash']) === null){
-        
+    $token_hash = token_hash($cookie)
+    if (find_valid_session(get_db_config(), $token_hash) === null){
+        json_response(401, ['error' => 'Unauthorize to perform this action']);
     }
+    clear_session_cookie();
+    json_response(200, ['status' => 'Log_out'])
 }

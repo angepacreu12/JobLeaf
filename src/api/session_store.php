@@ -27,11 +27,23 @@ function find_valid_session(PDO $pdo,string $token_hash): ?array {
          AND expires_at > now()'
     );
 
-    $stmt->bindvalue(':token_hash', $token_hash,  PDO::PARAM_LOB,);
+    $stmt->bindvalue(':token_hash', $token_hash,  PDO::PARAM_LOB);
 
     $stmt->execute();
 
     $session = $stmt->fetch();
 
     return $session === false ? null: $session;
+}
+
+function delete_session(PDO $pdo,string $token_hash) : void{
+    $stmt = $pdo->prepare(
+        'DELETE FROM session 
+        WHERE token_hash = :token_hash'
+    );
+
+    $stmt->bindvalue(':token_hash', $token_hash,  PDO::PARAM_LOB);
+
+    $stmt->execute();
+
 }
