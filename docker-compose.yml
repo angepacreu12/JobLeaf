@@ -1,11 +1,3 @@
-# jobviewphingy - full local stack
-#   docker compose up -d --build      start everything
-#   docker compose logs -f seed       see what the seed did
-#   docker compose down               stop (data is KEPT in the db_data volume)
-#   docker compose down -v            stop AND wipe the database (fresh seed on next up)
-#
-# Values like ${DATABASE_USER} come from the .env file next to this file.
-
 name: jobviewphingy
 
 services:
