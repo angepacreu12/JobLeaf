@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 if (isset($cookie.htmlspecialchars($_COOKIE))){
     check_cookie($cookie);
 

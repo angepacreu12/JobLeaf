@@ -9,6 +9,7 @@ require_once  dirname(__DIR__,2) .'/src/api/user_store.php';
 require_once  dirname(__DIR__, 2) . '/src/api/session_store.php';
 
 
+
 function login(PDO $pdo, string $email, string $password, string $user_agent): array {
     $DUMMY_HASH = '$argon2id$v=19$m=65536,t=3,p=4$PggBwYNHu5TF8SLYR1WqYw$7IchIP09TuUTmeQL7ytufhPH/wBrX2oxLoOoaNSqHbA'; //timing discovery protection
 
@@ -36,4 +37,25 @@ function login(PDO $pdo, string $email, string $password, string $user_agent): a
     $token = generate_new_token();
     create_session($pdo, $user['user_id'], hash_token($token), $user_agent);
     return ['status' => 200, 'role' => $user['role'], 'token' => $token];
+}
+
+function handle_login(): never{
+    $body = read_json_body();
+    if ($body === null){
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $email = get_string($body, "email");
+    $password = get_string($body, "password");
+    if($email === null || $password === null){
+        json_response(400, ['error' => 'Email and password required']);
+    }
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $user_agent = mb_substr($user_agent, 0, MAX_USER_AGENT);
+    $login_result = login(get_db_config(), $email, $password, $user_agent);
+    if ($login_result['status'] === 200){
+        set_session_cookie($login_result['token']);
+        json_response(200, ['role' => $login_result['role']]);
+
+    }
+    json_response($login_result['status'], ['error' => $login_result['error']]);
 }
