@@ -62,11 +62,35 @@ function handle_login(): never{
 function handle_logout(): never{
     $cookie = $_COOKIE[SESSION_COOKIE] ?? null;
 
-    if ($cookie === null || $cookie === ""){
+    if (!is_string($cookie) || $cookie === '') {
         json_response(400, ['error' => 'Invalid JSON']);
     }
     $token_hash = hash_token($cookie);
     delete_session(get_db_config(), $token_hash);
     clear_session_cookie();
     json_response(200, ['status' => 'Log_out']);
+}
+
+function require_auth(): string{
+    $cookie = $_COOKIE[SESSION_COOKIE] ?? null;
+
+    if (!is_string($cookie) || $cookie === '') {
+        json_response(401, ['error' => 'Unauthorized']);
+    }
+    $token_hash = hash_token($cookie);
+    $session = find_valid_session(get_db_config(), $token_hash);
+    if ($session === null) {
+        clear_session_cookie();
+        json_response(401, ['error' => 'Unauthorized']);
+    }
+    return $session['user_id'];
+}
+
+function handle_me(): never{
+    $user_id = require_auth();
+    $user = find_user_by_id(get_db_config(), $user_id);
+    if ($user === null) {
+        json_response(401, ['error' => 'Unauthorized']);
+    }
+    json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role']]);
 }

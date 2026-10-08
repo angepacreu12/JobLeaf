@@ -9,7 +9,7 @@ $routes = [
     '/api/login'  => ['POST' => 'handle_login'],
     //'/api/health' => ['GET'  => 'handle_health'],
     '/api/logout'   => ['POST' => 'handle_logout'],
-    '/api/me'   => ['get' => 'handle_me']
+    '/api/me'   => ['GET' => 'handle_me']
 ];
 
 
