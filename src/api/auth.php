@@ -59,3 +59,13 @@ function handle_login(): never{
     }
     json_response($login_result['status'], ['error' => $login_result['error']]);
 }
+
+function hendle_logout(): never{
+    $body = read_json_body();
+    if ($body === null){
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    if (find_valid_session($body['token_hash']) === null){
+        
+    }
+}
