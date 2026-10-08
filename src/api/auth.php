@@ -66,9 +66,7 @@ function handle_logout(): never{
         json_response(400, ['error' => 'Invalid JSON']);
     }
     $token_hash = hash_token($cookie);
-    if (delete_session(get_db_config(), $token_hash) === null){
-        json_response(401, ['error' => 'Unauthorize to perform this action']);
-    }
+    delete_session(get_db_config(), $token_hash);
     clear_session_cookie();
     json_response(200, ['status' => 'Log_out']);
 }
