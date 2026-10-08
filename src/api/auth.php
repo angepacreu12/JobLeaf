@@ -70,5 +70,5 @@ function handle_logout(): never{
         json_response(401, ['error' => 'Unauthorize to perform this action']);
     }
     clear_session_cookie();
-    json_response(200, ['status' => 'Log_out'])
+    json_response(200, ['status' => 'Log_out']);
 }
