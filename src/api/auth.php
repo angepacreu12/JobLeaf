@@ -51,7 +51,7 @@ function handle_login(): never{
     }
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $user_agent = mb_substr($user_agent, 0, MAX_USER_AGENT);
-    $login_result = login(get_db_config(), $email, $password, $user_agent);
+    $login_result = login(db(), $email, $password, $user_agent);
     if ($login_result['status'] === 200){
         set_session_cookie($login_result['token']);
         json_response(200, ['role' => $login_result['role']]);
@@ -66,7 +66,7 @@ function handle_logout(): never{
         json_response(400, ['error' => 'Invalid JSON']);
     }
     $token_hash = hash_token($cookie);
-    delete_session(get_db_config(), $token_hash);
+    delete_session(db(), $token_hash);
     clear_session_cookie();
     json_response(200, ['status' => 'Log_out']);
 }
@@ -78,7 +78,7 @@ function require_auth(): string{
         json_response(401, ['error' => 'Unauthorized']);
     }
     $token_hash = hash_token($cookie);
-    $session = find_valid_session(get_db_config(), $token_hash);
+    $session = find_valid_session(db(), $token_hash);
     if ($session === null) {
         clear_session_cookie();
         json_response(401, ['error' => 'Unauthorized']);
@@ -88,7 +88,7 @@ function require_auth(): string{
 
 function handle_me(): never{
     $user_id = require_auth();
-    $user = find_user_by_id(get_db_config(), $user_id);
+    $user = find_user_by_id(db(), $user_id);
     if ($user === null) {
         json_response(401, ['error' => 'Unauthorized']);
     }
