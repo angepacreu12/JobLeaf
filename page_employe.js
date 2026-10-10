@@ -13,6 +13,8 @@ function ouvrirMessages() {
     boutonOuvrir.setAttribute("aria-expanded", "true");
     panneau.classList.remove("opacity-0", "invisible");
     boutonFermer.focus();
+
+    chargeConversations();
 }
 
 function fermerMessages() {
@@ -32,3 +34,24 @@ document.addEventListener("keydown", (evenement) => {
         fermerMessages();
     }
 });
+
+async function chargeConversations() {
+    const reponse = await fetch ("/api/conversations");
+    const conversations = await reponse.json();
+
+    const liste = document.getElementById("liste-conversations");
+    const modele = document.getElementById("modele-conversation");
+    liste.innerHTML = "";
+
+    for (const conv of conversations) {
+        const ligne = modele.content.cloneNode(true);
+
+        ligne.querySelector('[data-champ="entreprise"]').textContent = conv.entreprise;
+        ligne.querySelector('[data-champ="apercu"]').textContent = conv.dernier_message;
+        ligne.querySelector('[data-champ="date"]').textContent =
+            new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit"})
+                .format(new Date(conv.date));;
+
+        liste.append(ligne);
+    }
+}
