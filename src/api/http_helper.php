@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+require_once dirname(__DIR__, 2) . '/src/api/validate.php';
+
 const SESSION_COOKIE = 'session';
 const MAX_JSON_BODY = 10000;
 const MAX_USER_AGENT = 500;

@@ -49,3 +49,15 @@ function reset_failed_logins(PDO $pdo, string $user_id): void {
     $stmt->bindValue(':user_id', $user_id);
     $stmt->execute();
 }
+
+function find_user_profile(PDO $pdo, string $user_id): ?array{
+    $stmt = $pdo->prepare(
+        'SELECT user_id, role, username, email_chiffre, nom_chiffre, prenom_chiffre, telephone_chiffre
+         FROM users
+         WHERE user_id = :user_id'
+    );
+    $stmt->bindValue(':user_id', $user_id);
+    $stmt->execute();
+    $row = $stmt->fetch();
+    return $row === false ? null : $row;
+}

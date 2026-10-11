@@ -51,3 +51,11 @@ function bytea_to_string(mixed $blob): ?string {
     }
     return $blob;
 }
+
+function get_user_dek(PDO $pdo, string $user_id): string {
+    $dek_chiffree = find_dek($pdo, $user_id);
+    if ($dek_chiffree === null){
+        throw new RuntimeException('DEK not found');
+    }
+    return unwrap_dek($dek_chiffree);
+}
