@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 require_once  dirname(__DIR__, 2) . '/src/api/config.php';
 require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 
@@ -52,8 +54,8 @@ function generate_dek(): string {
 }
 
 function wrap_dek(string $dek): string {
-    $uncrypted_dek = encrypt_field($dek, get_MASTER_key());
-    return $uncrypted_dek;
+    $wrapted_dek = encrypt_field($dek, get_MASTER_key());
+    return $wrapted_dek;
 }
 
 function unwrap_dek(string $dek_chiffree): string {
