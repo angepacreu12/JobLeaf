@@ -70,7 +70,7 @@ function checkuniquekey(){
 }
 
 function get_masterkey_ver() : int{
-    $master_key_ver = $_ENV['MASTER_KEY_VERSION'];
+    $master_key_ver = $_ENV['MASTER_KEY_VERSION'] ?? null;
     if ($master_key_ver === null){
         throw new RuntimeException('MASTER_KEY_VERSION_is not set');
     } elseif($master_key_ver >= 1){
