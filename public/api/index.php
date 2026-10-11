@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 require_once dirname(__DIR__, 2) . '/src/api/auth.php';
 require_once dirname(__DIR__, 2) . '/src/api/http_helper.php';
+require_once dirname(__DIR__, 2) . '/src/api/validate.php';
 
 const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 
