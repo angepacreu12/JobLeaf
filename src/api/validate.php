@@ -2,6 +2,19 @@
 
 declare(strict_types=1);
 
+// Postgres enums (01_schema.sql), keep exactly in sync
+const ROLES            = ['candidat', 'entreprise', 'admin'];
+const ROLES_REGISTER   = ['candidat', 'entreprise'];
+const CATEGORIES       = ['Hopital', 'Informatique', 'Parfumerie'];
+const STATUTS_ANNONCE  = ['brouillon', 'publiee', 'expiree', 'pourvue'];
+
+// varchar columns, list enforced by PHP only (dictionnaire_donnees)
+const TYPES_CONTRAT        = ['CDI', 'CDD', 'alternance', 'stage', 'freelance'];
+const TELETRAVAIL          = ['sur site', 'hybride', 'full remote'];
+const STATUTS_CANDIDATURE  = ['envoyee', 'vue', 'entretien', 'refusee', 'accepte'];
+
+const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+
 function validate(array $array, string $field, int $minlenght, int $maxlenght, bool $required): ?string{
     $value = $array[$field] ?? null;
     if($value === null) {
@@ -63,6 +76,20 @@ function validate_number(array $array, string $field, int $min, int $max, bool $
     $value = filter_var($value, FILTER_VALIDATE_INT, $filter);
     if($value === false){
         json_response(400, ['error' => "$field: must be an integer between $min and $max"]);
+    }
+    return $value;
+}
+
+function validate_uuid(array $array, string $field, $required): ?string{
+    $value = validate($array, $field, 36, 36, $required);
+    if($value === null) {
+        if ($required === true){
+            json_response(400, ['error' => "$field: is required"]);
+        }
+        return null;
+    }
+    if (preg_match('#^' . UUID_RE . '$#', $value) !== 1){
+        json_response(400, ['error' => "$field: Invalid ID"]);
     }
     return $value;
 }
