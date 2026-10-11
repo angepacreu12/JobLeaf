@@ -2,6 +2,8 @@
 require_once  dirname(__DIR__, 2) . '/src/api/config.php';
 require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 
+const SODIUM_CRYPTO_SECRETBOX_NONCEBYTES = 24;
+const SODIUM_CRYPTO_SECRETBOX_KEYBYTES = 32;
 function get_hmask_index_mail($email) :string {
     $hmask_key = get_HMAC_key();
     $normalise_mail = strtolower(trim($email));
@@ -24,7 +26,7 @@ function hash_token(string $token) : string {
 }
 
 function encrypt_field(?string $plain, string $key): ?string {
-    if ($plain === null || $key ===null ){
+    if ($plain === null){
         return null;
     }
     $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
@@ -32,11 +34,11 @@ function encrypt_field(?string $plain, string $key): ?string {
 }
 
 function decrypt_field(?string $blob, string $key): ?string {
-    if ($blob === null || $key === null){
+    if ($blob === null){
         return null;
     }
-    $nonce = substr($blob, 0, 24);
-    $cipher = substr($blob, 24);
+    $nonce = substr($blob, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+    $cipher = substr($blob, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
     $plain = sodium_crypto_secretbox_open($cipher, $nonce, $key);
     if ($plain === false){
         throw new RuntimeException('wrong key or modified data');
@@ -44,16 +46,18 @@ function decrypt_field(?string $blob, string $key): ?string {
     return $plain;
 }
 
-//function check_password($password, $email_index) :string {
-//    $account_state = get_account_state($email_index);
-//    if (isInFuture($account_state) === false) {
-//        header("HTTP/1.1 429 Time out");
-//        exit;
-//    }
-//    $pasword_db_hash = get_pasword_deb_hash($email_index);
-//    $password_hash = PASSWORD_ARGON2ID($password);
-//    if ($password_hash == $pasword_db_hash) {
-//        return true;
-//    } else { return false;}
-//}
+function generate_dek(): string {
+    $newdek = random_bytes(SODIUM_CRYPTO_SECRETBOX_KEYBYTES);
+    return $newdek;
+}
+
+function wrap_dek(string $dek): string {
+    $uncrypted_dek = encrypt_field($dek, get_MASTER_key());
+    return $uncrypted_dek;
+}
+
+function unwrap_dek(string $dek_chiffree): string {
+    $decrypted_dek = decrypt_field($dek_chiffree, get_MASTER_key());
+    return $decrypted_dek;
+}
 
