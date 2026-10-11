@@ -55,3 +55,14 @@ function clear_session_cookie(): void {
     'samesite' => 'Lax',
     ]);
 }
+
+function get_pagination(): array {
+    $page = validate_number($_GET, 'page', 1, 100000, false) ?? 1;
+    $per_page = validate_number($_GET, 'per_page', 1, 50, false) ?? 20;
+    $offset = ($page - 1) * $per_page;
+    return ['page' => $page, 'per_page' => $per_page, 'offset' => $offset];
+}
+
+function paginated_response(array $items, int $total, array $pagination): never {
+    json_response(200, ['items' => $items, 'page' => $pagination['page'], 'per_page' => $pagination['per_page'], $total]);
+}

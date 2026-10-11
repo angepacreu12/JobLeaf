@@ -4,8 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 require_once dirname(__DIR__, 2) . '/src/api/auth.php';
 require_once dirname(__DIR__, 2) . '/src/api/http_helper.php';
-
-const UUID_RE = '[0-9a-f-]{36}';
+require_once dirname(__DIR__, 2) . '/src/api/validate.php';
 
 $routes = [
     '#^/api/login$#'  => ['POST' => 'handle_login'],
