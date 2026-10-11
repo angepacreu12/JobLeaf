@@ -11,7 +11,7 @@ const STATUTS_ANNONCE  = ['brouillon', 'publiee', 'expiree', 'pourvue'];
 // varchar columns, list enforced by PHP only (dictionnaire_donnees)
 const TYPES_CONTRAT        = ['CDI', 'CDD', 'alternance', 'stage', 'freelance'];
 const TELETRAVAIL          = ['sur site', 'hybride', 'full remote'];
-const STATUTS_CANDIDATURE  = ['envoyee', 'vue', 'entretien', 'refusee', 'accepte'];
+const STATUTS_CANDIDATURE  = ['envoyee', 'vue', 'entretien', 'refusee', 'acceptee'];
 
 const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 
@@ -80,16 +80,26 @@ function validate_number(array $array, string $field, int $min, int $max, bool $
     return $value;
 }
 
-function validate_uuid(array $array, string $field, $required): ?string{
+function validate_uuid(array $array, string $field, bool $required): ?string{
     $value = validate($array, $field, 36, 36, $required);
     if($value === null) {
-        if ($required === true){
-            json_response(400, ['error' => "$field: is required"]);
-        }
         return null;
     }
     if (preg_match('#^' . UUID_RE . '$#', $value) !== 1){
         json_response(400, ['error' => "$field: Invalid ID"]);
     }
     return $value;
+}
+
+function validate_enum(array $array, string $field, array $allowed, bool $required): ?string {
+    $value = validate($array, $field, 1, 50, $required);
+    if($value === null) {
+        return null;
+    }
+    foreach ($allowed as $option){
+        if (strcasecmp($value, $option) === 0){
+            return $option;
+        }
+    }
+    json_response(400, ['error' => "$field: must be one of " . implode(', ', $allowed)]);
 }
