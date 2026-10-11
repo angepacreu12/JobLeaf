@@ -107,6 +107,9 @@ function require_role(string ...$roles): array {
 function handle_me(): never{
     $user = current_user();
     $profile = find_user_profile(db(), $user['user_id']);
+    if ($profile === null){
+        json_response(401, ['error' => 'Unauthorized']);
+    }
     $dek = get_user_dek(db(), $user['user_id']);
     $fields = [
         'email'     => 'email_chiffre',
@@ -120,7 +123,7 @@ function handle_me(): never{
         $todecrypt = $profile[$column];
         $todecrypt = bytea_to_string($todecrypt);
         $todecrypt = decrypt_field($todecrypt, $dek);
-        $data[$key] = .$todecrypt;
+        $data[$key] = $todecrypt;
     }
-    json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role']'username' => $profile['username']] + $data);
+    json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role'],'username' => $profile['username']] + $data);
 }
