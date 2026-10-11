@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 function create_dek(PDO $pdo, string $user_id, string $dek_chiffree): void {
     $stmt = $pdo->prepare(
         'INSERT INTO "DEK" (user_id, dek_chiffree, version_master_key)
@@ -14,17 +15,17 @@ function create_dek(PDO $pdo, string $user_id, string $dek_chiffree): void {
 
 function find_dek(PDO $pdo, string $user_id): ?string {
     $stmt = $pdo->prepare(
-        'SELECT dek_chiffre
+        'SELECT dek_chiffree
          FROM "DEK"
          WHERE user_id = :user_id'
     );
     $stmt->bindValue(':user_id',$user_id );
     $stmt->execute();
-    $stmt->fetchColumn();
-    if ($stmt === false){
+    $value = $stmt->fetchColumn();
+    if ($value === false){
         return null;
     }
-    $dek = strval($stmt);
+    $dek = bytea_to_string($value);
     return $dek;
 }
 
@@ -35,4 +36,18 @@ function delete_dek(PDO $pdo, string $user_id): void {
     );
     $stmt->bindValue(':user_id',$user_id );
     $stmt->execute();
+}
+
+function bytea_to_string(mixed $blob): ?string {
+    if ($blob === null){
+        return null;
+    }
+    if(is_resource($blob) === true){
+        $value = stream_get_contents($blob);
+        if ($value === false){
+            throw new RuntimeException('cannot read bytea');
+        }
+        return $value;
+    }
+    return $blob;
 }
