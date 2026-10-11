@@ -7,6 +7,7 @@ require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 require_once  dirname(__DIR__, 2) . '/src/api/crypto.php';
 require_once  dirname(__DIR__,2) .'/src/api/user_store.php';
 require_once  dirname(__DIR__, 2) . '/src/api/session_store.php';
+require_once  dirname(__DIR__,2) .'/src/api/db_connection.php';
 
 
 
@@ -51,7 +52,7 @@ function handle_login(): never{
     }
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $user_agent = mb_substr($user_agent, 0, MAX_USER_AGENT);
-    $login_result = login(get_db_config(), $email, $password, $user_agent);
+    $login_result = login(db(), $email, $password, $user_agent);
     if ($login_result['status'] === 200){
         set_session_cookie($login_result['token']);
         json_response(200, ['role' => $login_result['role']]);
@@ -63,10 +64,10 @@ function handle_logout(): never{
     $cookie = $_COOKIE[SESSION_COOKIE] ?? null;
 
     if (!is_string($cookie) || $cookie === '') {
-        json_response(400, ['error' => 'Invalid JSON']);
+        json_response(200, ['status' => 'Log_out']);
     }
     $token_hash = hash_token($cookie);
-    delete_session(get_db_config(), $token_hash);
+    delete_session(db(), $token_hash);
     clear_session_cookie();
     json_response(200, ['status' => 'Log_out']);
 }
@@ -78,7 +79,7 @@ function require_auth(): string{
         json_response(401, ['error' => 'Unauthorized']);
     }
     $token_hash = hash_token($cookie);
-    $session = find_valid_session(get_db_config(), $token_hash);
+    $session = find_valid_session(db(), $token_hash);
     if ($session === null) {
         clear_session_cookie();
         json_response(401, ['error' => 'Unauthorized']);
@@ -86,11 +87,24 @@ function require_auth(): string{
     return $session['user_id'];
 }
 
-function handle_me(): never{
+
+function current_user(): array {
     $user_id = require_auth();
-    $user = find_user_by_id(get_db_config(), $user_id);
+    $user = find_user_by_id(db(), $user_id);
     if ($user === null) {
         json_response(401, ['error' => 'Unauthorized']);
     }
+    return $user;
+}
+function require_role(string ...$roles): array {
+    $user = current_user();
+    if (!in_array($user['role'], $roles, true)) {
+        json_response(403, ['error' => 'Forbidden']);
+    }
+    return $user;
+}
+
+function handle_me(): never{
+    $user = current_user();
     json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role']]);
 }

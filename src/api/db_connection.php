@@ -1,12 +1,14 @@
 <?php
 
-$dotenv->load(__DIR__.'/.env');
+declare(strict_types=1);
+require_once  dirname(__DIR__, 2) . '/src/api/config.php';
 
-function db_connect(){
-   	try {
-		$pdo = new PDO($dsn, $user, $pass, $opt);
-		echo 'DB is connected';
-	} catch(PDOException $e) {
-		echo "Connection failed: " . $e->getMessage();
-	}
+function db(): PDO {
+    static $pdo = null;
+
+    if ($pdo === null) {
+  		$pdo = get_db_config();
+    }
+
+    return $pdo;
 }
