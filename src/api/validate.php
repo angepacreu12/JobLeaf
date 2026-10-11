@@ -40,10 +40,27 @@ function validate_phone(array $array, string $field, bool $required): ?string{
      if ($phone === null){
         return $phone;
     }
-    $to_trim = ["/", "+", " ", ".", "(", ")", ","];
+    $to_trim = ["/", "+", " ", ".", "(", ")", ",", "-"];
     $phone = str_replace($to_trim,"", $phone);
-    if (preg_match('/^\+?[0-9]{6,15}$/', $phone) === 0){
+    if (preg_match('/^\+?[0-9]{6,15}$/', $phone) !== 1){
         json_response(400, ['error' => "$field: invalid phone"]);
     }
     return $phone;
+}
+
+function validate_number(array $array, string $field, int $min, int $max, bool $required): ?int{
+    $value = $array[$field] ?? null;
+    if($value === null) {
+        if ($required === true){
+            json_response(400, ['error' => "$field: is required"]);
+        }
+        return null;
+    }
+    if(is_bool($value) === true){
+        json_response(400, ['error' => "$field: must be an integer"]);
+    }
+    if(filter_var($value, FILTER_VALIDATE_INT, [$min, $max]) === false){
+        json_response(400, ['error' => "$field: must be between $min and $max"]);
+    }
+    return $value;
 }
