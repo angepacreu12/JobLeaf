@@ -5,14 +5,14 @@ require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 require_once dirname(__DIR__, 2) . '/src/api/auth.php';
 require_once dirname(__DIR__, 2) . '/src/api/http_helper.php';
 
-const UUID_RE = '[0-9a-f-]{36}';
+const UUID_RE = '[0-9a-f]{N} - [0-9a-f]{N} - [0-9a-f]{N} - [0-9a-f]{N} - [0-9a-f]{N}';
 
 $routes = [
     '#^/api/login$#'  => ['POST' => 'handle_login'],
     '#^/api/logout$#' => ['POST' => 'handle_logout'],
     '#^/api/me$#'     => ['GET'  => 'handle_me'],
     // '#^/api/annonces$#'                    => ['GET' => 'handle_list_annonces', 'POST' => 'handle_create_annonce'],
-    // '#^/api/annonces/(' . UUID_RE . ')$#'  => ['GET' => 'handle_get_annonce',   'PATCH' => 'handle_update_annonce'],
+    // '#^/api/annonces/(' . UUID_RE . ')$#i'  => ['GET' => 'handle_get_annonce',   'PATCH' => 'handle_update_annonce'],
 ];
 
 try {
