@@ -64,5 +64,5 @@ function get_pagination(): array {
 }
 
 function paginated_response(array $items, int $total, array $pagination): never {
-    json_response(200, ['items' => $items, 'page' => $pagination['page'], 'per_page' => $pagination['per_page'], $total]);
+    json_response(200, ['items' => $items, 'page' => $pagination['page'], 'per_page' => $pagination['per_page'], 'total' => $total]);
 }
