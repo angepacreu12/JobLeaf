@@ -29,6 +29,7 @@ CREATE TABLE "users" (
   "email_chiffre" bytea NOT NULL,
   "nom_chiffre" bytea,
   "prenom_chiffre" bytea,
+  "telephone_chiffre" bytea,
   "username" varchar UNIQUE,
   "role" role_user NOT NULL,
   "created_at" timestamptz,
@@ -90,7 +91,7 @@ CREATE TABLE "message" (
 CREATE TABLE "token" (
   "token_id" UUID PRIMARY KEY DEFAULT (uuidv7()),
   "user_id" UUID NOT NULL,
-  "type" type_token NOT NULL,
+  "type" varchar NOT NULL,
   "token_hash" bytea UNIQUE NOT NULL,
   "expires_at" timestamptz NOT NULL,
   "used_at" timestamptz
@@ -149,20 +150,20 @@ COMMENT ON COLUMN "session"."token_hash" IS 'hash of the cookie value, never the
 
 COMMENT ON COLUMN "session"."user_agent" IS 'optional: which browser or device';
 
-ALTER TABLE "profil_entreprise" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "profil_entreprise" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "annonce" ADD FOREIGN KEY ("entreprise_id") REFERENCES "profil_entreprise" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "annonce" ADD FOREIGN KEY ("entreprise_id") REFERENCES "profil_entreprise" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "candidature" ADD FOREIGN KEY ("annonce_id") REFERENCES "annonce" ("annonce_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "candidature" ADD FOREIGN KEY ("annonce_id") REFERENCES "annonce" ("annonce_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "candidature" ADD FOREIGN KEY ("candidat_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "candidature" ADD FOREIGN KEY ("candidat_id") REFERENCES "users" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "message" ADD FOREIGN KEY ("candidature_id") REFERENCES "candidature" ("candidature_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "message" ADD FOREIGN KEY ("candidature_id") REFERENCES "candidature" ("candidature_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "message" ADD FOREIGN KEY ("auteur_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "message" ADD FOREIGN KEY ("auteur_id") REFERENCES "users" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "token" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "token" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "session" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "session" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE "DEK" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE "DEK" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("user_id") ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
