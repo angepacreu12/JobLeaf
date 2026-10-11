@@ -8,7 +8,7 @@ require_once  dirname(__DIR__, 2) . '/src/api/crypto.php';
 require_once  dirname(__DIR__,2) .'/src/api/user_store.php';
 require_once  dirname(__DIR__, 2) . '/src/api/session_store.php';
 require_once  dirname(__DIR__,2) .'/src/api/db_connection.php';
-
+require_once  dirname(__DIR__,2) .'/src/api/validate.php';
 
 
 function login(PDO $pdo, string $email, string $password, string $user_agent): array {

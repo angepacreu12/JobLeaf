@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
 
-function validate(array $array, string $field, int $minlenght, int $maxlenght, bool $required) {
-    if($required === true && $array[$field] === null || $array[$field] ===""){
-        json_response(400, ['error' => "<field>: is required"]);
+function validate(array $array, string $field, int $minlenght, int $maxlenght, bool $required){
+    $value = $array[$field] ?? null;
+    if($value === null) {
+        if ($required === true){
+            json_response(400, ['error' => "$field: is required"]);
+        }
         return null;
     }
-    if(is_string($array[$field]) === false){
-        json_response(400, ['error' => "<field>: must be a string"]);
+    if(is_string($value) === false){
+        json_response(400, ['error' => "$field: must be a string"]);
     }
-    $value = trim($array[$field]);
+    $value = trim($value);
+    if ($required === true && $value === ""){
+        json_response(400, ['error' => "$field: is required"]);
+    }
     if(mb_strlen($value) > $maxlenght || mb_strlen($value) < $minlenght) {
-        json_response(400, ['error' => "<field>: must be contain $minlenght minimum and $maxlenght maximum"]);
+        json_response(400, ['error' => "$field: must be contain $minlenght minimum and $maxlenght maximum"]);
     }
     return $value;
 }
