@@ -9,7 +9,6 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_MDP}
       POSTGRES_DB: ${DATABASE_NAME}
-      display_errors : Off
     ports:
       - "5433:5432"                        # host 5433 -> container 5432 (for your php tests / psql)
     volumes:
