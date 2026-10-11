@@ -9,7 +9,7 @@ require_once  dirname(__DIR__,2) .'/src/api/user_store.php';
 require_once  dirname(__DIR__, 2) . '/src/api/session_store.php';
 require_once  dirname(__DIR__,2) .'/src/api/db_connection.php';
 require_once  dirname(__DIR__,2) .'/src/api/validate.php';
-
+require_once dirname(__DIR__, 2) . '/src/api/dek_store.php';
 
 function login(PDO $pdo, string $email, string $password, string $user_agent): array {
     $DUMMY_HASH = '$argon2id$v=19$m=65536,t=3,p=4$PggBwYNHu5TF8SLYR1WqYw$7IchIP09TuUTmeQL7ytufhPH/wBrX2oxLoOoaNSqHbA'; //timing discovery protection
@@ -106,5 +106,21 @@ function require_role(string ...$roles): array {
 
 function handle_me(): never{
     $user = current_user();
-    json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role']]);
+    $profile = find_user_profile(db(), $user['user_id']);
+    $dek = get_user_dek(db(), $user['user_id']);
+    $fields = [
+        'email'     => 'email_chiffre',
+        'nom'       => 'nom_chiffre',
+        'prenom'    => 'prenom_chiffre',
+        'telephone' => 'telephone_chiffre',
+    ];
+
+    $data = [];
+    foreach ($fields as $key => $column) {
+        $todecrypt = $profile[$column];
+        $todecrypt = bytea_to_string($todecrypt);
+        $todecrypt = decrypt_field($todecrypt, $dek);
+        $data[$key] = .$todecrypt;
+    }
+    json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role']'username' => $profile['username']] + $data);
 }
