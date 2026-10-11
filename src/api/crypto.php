@@ -23,7 +23,26 @@ function hash_token(string $token) : string {
     return $hash_token;
 }
 
+function encrypt_field(?string $plain, string $key): ?string {
+    if ($plain === null || $key ===null ){
+        return null;
+    }
+    $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+    return $nonce . sodium_crypto_secretbox($plain, $nonce, $key);
+}
 
+function decrypt_field(?string $blob, string $key): ?string {
+    if ($blob === null || $key === null){
+        return null;
+    }
+    $nonce = substr($blob, 0, 24);
+    $cipher = substr($blob, 24);
+    $plain = sodium_crypto_secretbox_open($cipher, $nonce, $key);
+    if ($plain === false){
+        throw new RuntimeException('wrong key or modified data');
+    }
+    return $plain;
+}
 
 //function check_password($password, $email_index) :string {
 //    $account_state = get_account_state($email_index);
