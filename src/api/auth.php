@@ -7,6 +7,7 @@ require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 require_once  dirname(__DIR__, 2) . '/src/api/crypto.php';
 require_once  dirname(__DIR__,2) .'/src/api/user_store.php';
 require_once  dirname(__DIR__, 2) . '/src/api/session_store.php';
+require_once  dirname(__DIR__,2) .'/src/api/db_connection.php';
 
 
 
@@ -63,7 +64,7 @@ function handle_logout(): never{
     $cookie = $_COOKIE[SESSION_COOKIE] ?? null;
 
     if (!is_string($cookie) || $cookie === '') {
-        json_response(400, ['error' => 'Invalid JSON']);
+        json_response(200, ['status' => 'Log_out']);
     }
     $token_hash = hash_token($cookie);
     delete_session(db(), $token_hash);
@@ -86,11 +87,24 @@ function require_auth(): string{
     return $session['user_id'];
 }
 
-function handle_me(): never{
+
+function current_user(): array {
     $user_id = require_auth();
     $user = find_user_by_id(db(), $user_id);
     if ($user === null) {
         json_response(401, ['error' => 'Unauthorized']);
     }
+    return $user;
+}
+function require_role(string ...$roles): array {
+    $user = current_user();
+    if (!in_array($user['role'], $roles, true)) {
+        json_response(403, ['error' => 'Forbidden']);
+    }
+    return $user;
+}
+
+function handle_me(): never{
+    $user = current_user();
     json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role']]);
 }

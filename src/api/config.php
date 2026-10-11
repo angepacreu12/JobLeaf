@@ -3,11 +3,11 @@
 use Dotenv\Dotenv;
 require_once  dirname(__DIR__ , 2). '/vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
-$dotenv->load();
+$dotenv->safeLoad();
 
 
 function get_HMAC_key() : string {
-    $hmac_key = $_ENV['HMAC_KEY'];
+    $hmac_key = $_ENV['HMAC_KEY'] ?? null;
     if ($hmac_key === null ) {
         throw new RuntimeException('Cant get HMAC key from .env');
     } elseif ($hmac_key === ""){
@@ -23,7 +23,7 @@ function get_HMAC_key() : string {
 }
 
 function get_MASTER_key() : string {
-    $master_key = $_ENV['MASTER_KEY'];
+    $master_key = $_ENV['MASTER_KEY'] ?? null;
     if ($master_key === null ) {
         throw new RuntimeException('Cant get MASTER key from .env');
     } elseif ($master_key === ""){
@@ -71,9 +71,7 @@ function checkuniquekey(){
 
 function get_masterkey_ver() : int{
     $master_key_ver = $_ENV['MASTER_KEY_VERSION'];
-    if (IntlChar::isdigit($master_key_ver) !== true){
-        throw new RuntimeException('MASTER_KEY_VER is not a number');
-    } elseif ($master_key_ver === null){
+    if ($master_key_ver === null){
         throw new RuntimeException('MASTER_KEY_VERSION_is not set');
     } elseif($master_key_ver >= 1){
         return $master_key_ver;

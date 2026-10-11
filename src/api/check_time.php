@@ -1,7 +1,6 @@
 <?php
 function isInFuture(?string $timestamp): bool
 {
-    // Empty or NULL (e.g. bloque_jusqua not set) → not in the future
     if ($timestamp === null || trim($timestamp) === '') {
         return false;
     }
