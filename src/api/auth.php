@@ -127,3 +127,16 @@ function handle_me(): never{
     }
     json_response(200, ['user_id' => $user['user_id'], 'role' => $user['role'],'username' => $profile['username']] + $data);
 }
+
+function handle_register(): never{
+    $body = read_json_body();
+    if ($body === null){
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $email = $body['email'];
+    $password = $body('password');
+    $nom = $body['nom'];
+    $prenom = $body['prenom'];
+    $telephone = $body['telephone'];
+    $role = $data['role'];
+}
