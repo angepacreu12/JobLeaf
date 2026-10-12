@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+require_once dirname(__DIR__, 2) . '/src/api/annonce_store.php';
 
 function handle_list_annonces(): never {
     $filter = [ 'q' => validate($_GET, 'q', 2, 100, false), 'ville' => validate($_GET, 'ville', 1, 100, false), 
