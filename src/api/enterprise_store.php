@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 function create_profil_entreprise(PDO $pdo, string $user_id, string $nom_entreprise): void {
     $stmt = $pdo->prepare(
-        "INSERT INTO users ( user_id, nom_entreprise)
+        "INSERT INTO profil_entreprise ( user_id, nom_entreprise)
          VALUES ( :user_id, :nom_entreprise)
          "
     );
