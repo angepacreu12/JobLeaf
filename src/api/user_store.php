@@ -70,10 +70,10 @@ function create_user(PDO $pdo, array $user): string {
     );
 
     $stmt->bindValue(':email_index', $user['email_index'], PDO::PARAM_LOB);
-    $stmt->bindValue(':password_hash', $user[':password_hash']);
+    $stmt->bindValue(':password_hash', $user['password_hash']);
     $stmt->bindValue(':email_chiffre', $user['email_chiffre'], PDO::PARAM_LOB);
     $stmt->bindValue(':nom_chiffre', $user['nom_chiffre'], PDO::PARAM_NULL);
-    $stmt->bindValue(':prenom_chiffre', $user[':prenom_chiffre'], PDO::PARAM_NULL);
+    $stmt->bindValue(':prenom_chiffre', $user['prenom_chiffre'], PDO::PARAM_NULL);
     $stmt->bindValue(':telephone_chiffre', $user['telephone_chiffre'], PDO::PARAM_NULL);
     $stmt->bindValue(':username', $user['username']);
     $stmt->bindValue(':role', $user['role']);
