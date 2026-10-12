@@ -4,8 +4,7 @@ declare(strict_types=1);
 require_once  dirname(__DIR__, 2) . '/src/api/config.php';
 require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 
-const SODIUM_CRYPTO_SECRETBOX_NONCEBYTES = 24;
-const SODIUM_CRYPTO_SECRETBOX_KEYBYTES = 32;
+
 function get_hmask_index_mail($email) :string {
     $hmask_key = get_HMAC_key();
     $normalise_mail = strtolower(trim($email));
