@@ -45,6 +45,7 @@ Number of pages = `ceil(total / per_page)`. A page past the end returns `items: 
 |---|---|
 | `email` | valid email, max 254, stored lowercase |
 | `username` | 3–30 characters, unique, public (shown on the site) |
+| `nom`, `prenom` | 1–100 characters, required at register |
 | `password` | 12–256 characters |
 | `telephone` | digits, optional leading `+`, 6–15 digits (spaces . - ( ) / , are removed) |
 | `salaire_min`, `salaire_max` | whole euros, 0–1 000 000, `salaire_max` ≥ `salaire_min` |
@@ -185,7 +186,7 @@ Body:
   "nom_entreprise": "Only when role = entreprise"
 }
 ```
-Required: `email`, `password`, `role`, `username` (3–30 characters, unique), + `nom_entreprise` for a company.
+Required: `email`, `password`, `role`, `username` (3–30 characters, unique), `nom`, `prenom`, + `nom_entreprise` for a company
 201: same shape as `GET /api/me`. The account is created already verified (no email verification). Not logged in yet → call `POST /api/login` next.
 Errors: 400 · 409 email or username taken
 
