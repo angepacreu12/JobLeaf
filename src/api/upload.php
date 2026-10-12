@@ -9,7 +9,7 @@ function read_cv_upload(string $field): string {
         json_response(413, ['error' => "Payload Too Large"]);
     }
     if (isset($_FILES[$field]) === false || $_FILES[$field]['error'] === UPLOAD_ERR_NO_FILE){
-        json_response(404, ['error' => "$field: is required"]);
+        json_response(400, ['error' => "$field: is required"]);
     }
     if (is_array($_FILES[$field]['error']) === true){
         json_response(400, ['error' => "Bad Request"]);
@@ -22,7 +22,7 @@ function read_cv_upload(string $field): string {
         json_response(400, ['error' => "$field: upload failed"]);
     }
     if (is_uploaded_file($_FILES[$field]['tmp_name']) === false){
-        json_response(404, ['error' => "$field: is required"]);
+        json_response(400, ['error' => "$field: upload failed"]);
     }
     $tmp = $_FILES[$field]['tmp_name'];
     if (filesize($tmp) > MAX_CV_SIZE){
