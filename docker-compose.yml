@@ -1,0 +1,71 @@
+name: jobviewphingy
+
+services:
+
+  # ---------------------------------------------------------------- PostgreSQL
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_MDP}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5433:5432"                        # host 5433 -> container 5432 (for your php tests / psql)
+    volumes:
+      - db_data:/var/lib/postgresql         # Postgres 18+ path (NOT /var/lib/postgresql/data)
+      - ./db/init:/docker-entrypoint-initdb.d:ro   # *.sql run ONLY when the volume is empty
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- test data
+  # Runs once and exits. Injects seed/seed_data.json ONLY if the users table is empty.
+  seed:
+    build:
+      context: .
+      dockerfile: docker/seed/Dockerfile
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+    volumes:
+      - ./seed:/app                        # seed_data.json in, inject_report.json out
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # ---------------------------------------------------------------- PHP API
+  php:
+    build: ./docker/php
+    env_file: .env
+    environment:
+      # Inside Docker the DB is the "db" service on 5432.
+      # These override the localhost:5433 values your .env uses for tests on the laptop.
+      DATABASE_URL: db
+      DATABASE_PORT: "5432"
+    volumes:
+      - ./:/var/www/app
+      - ./docker/php/hardening.ini:/usr/local/etc/php/conf.d/zz-hardening.ini:ro           # live code: edit on the laptop, no rebuild needed
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- web entry point
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "8586:80"                          # point your reverse proxy here
+    volumes:
+      - ./public:/var/www/app/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+    restart: unless-stopped
+
+volumes:
+  db_data:
