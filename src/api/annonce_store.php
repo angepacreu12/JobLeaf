@@ -119,13 +119,5 @@ function find_annonce(PDO $pdo, string $id): ?array {
     return $annonce;
 };
 
-function handle_apply(string $annonce_id): never {
-    $user = require_role('candidat');
-    $annonce = find_annonce(db(), $annonce_id);
-    if($annonce === null){
-        json_response(404, ['error' => "Not found"]);
-    }
-    $message = validate($_POST, 'message', 1, 5000, true);
 
-}
     
