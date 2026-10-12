@@ -113,7 +113,7 @@ function validate_password(array $array, string $field, bool $required): ?string
         json_response(400, ['error' => "$field: Must be a string"]);
     }
     if (mb_strlen($value) < 12 || mb_strlen($value) > 256){
-        json_response(400, ['error' => "$field: Must be a string"]);
+        json_response(400, ['error' => "$field: Must be a string between 12 and 256 characters"]);
     }
     return $value;
 }

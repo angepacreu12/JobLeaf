@@ -140,7 +140,7 @@ function handle_register(): never{
     $data['nom']       = validate($body, 'nom', 1, 100, true);
     $data['prenom']    = validate($body, 'prenom', 1, 100, true);
     $data['telephone'] = validate_phone($body, 'telephone', false);
-    $data['username']  = $data['nom'] . '.' . $data['prenom'];
+    $data['username']  = validate($body, 'username', 1, 100, false);
     if ($data['role'] === 'entreprise'){
         $data['nom_entreprise'] = validate($body, 'nom_entreprise', 1, 200, true);
     } else {
