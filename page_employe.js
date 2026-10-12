@@ -1,3 +1,6 @@
+
+// Bulle chat & cadre chat //
+
 const bulle = document.getElementById("bulle-messages");
 const boutonOuvrir = document.getElementById("ouvrir-messages");
 const boutonFermer = document.getElementById("fermer-messages");
@@ -55,3 +58,5 @@ async function chargeConversations() {
         liste.append(ligne);
     }
 }
+
+// Cadre annonce //

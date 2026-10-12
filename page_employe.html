@@ -49,57 +49,59 @@
     
                     <a href="offres.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Mes offres</a>
 
-            </aside>
-
-            <!-- Bulle message -->
-
-            <section id="bulle-messages"
+                    
+                    <!-- Bulle message -->
+                    
+                    <section id="bulle-messages"
                     class="absolute left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
-                
-                <!-- Bulle repliée -->
-
-                <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations" 
+                    
+                    <!-- Bulle repliée -->
+                    
+                    <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations" 
                     class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-                        </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                    </svg>
                 </button>
-            
+                
                 <!-- Bulle dépliée -->
-
+                
                 <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
-
+                    
                     <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
                         <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
                         <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
-                                class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                        <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
-
-                            <template id="modele-conversation">
-                                <li>
-                                    <a href="#" class="flex gap-3 px-4 py-3 hover:bg-beige-coton">
-                                        <img src="image/avatar-defaut.png" alt="" class="h-10 w-10 shrink-0 rounded-full object-cover">
-                                        <span class="min-w-0 flex-1">
-                                            <span class="flex justify-between gap-2">
-                                                <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
-                                                <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
-                                            </span>
-                                            <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
-                                        </span>
-                                    </a>
-                                </li>
-                            </template>
-
+                        class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
+                
+                <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                
+                <template id="modele-conversation">
+                    <li>
+                        <a href="#" class="flex gap-3 px-4 py-3 hover:bg-beige-coton">
+                            <img src="image/avatar-defaut.png" alt="" class="h-10 w-10 shrink-0 rounded-full object-cover">
+                            <span class="min-w-0 flex-1">
+                                <span class="flex justify-between gap-2">
+                                    <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                    <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                </span>
+                                <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                            </span>
+                        </a>
+                    </li>
+                </template>
+                
+            </div>
+            
+        </section>
+        
+    </aside>
 
-            </section>
-
+            <!-- Barre de recherche -->
 
             <div class="flex-1 flex flex-col items-center pl-1 pt-5">
 
@@ -114,10 +116,32 @@
 
                 </form>
 
+                
+                <!-- Cadre annonce -->
+                
+                <section id="cadre-annonce" class="mt-6 bg-white w-65 h-30 rounded-lg">
+                    
+                    <!-- Cadre annonce replié -->
+
+                    <div class="flex-1 flex flex-col items-left">
+
+                        <a href="#" class="flex items-left">
+                            <img src="image/avatar-defaut.png" alt="" class="h-13 w-13 shrink-0 rounded-full object cover">
+                            <span class="min-w-0 flex-1">
+                                <span data-champ="titre" class="truncate font-bold text-vert-fonce text-base"></span>
+                                <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce text-sm"></span>
+                                <span data-champ="ville" class="block truncate text-sm text-vert-fonce"></span>
+                                <span data-champ="type_contrat" class="block truncate text-sm text-fonce"></span>
+                                <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                            </span>
+                        </a>
+
+                    </div>
+                    
+                </section>
+
             </div>
-
-            
-
+                
         </main>
 
     </body>
