@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 require_once  dirname(__DIR__, 2) . '/src/api/crypto.php';
-require_once  dirname(__DIR__, 2) . '/src/api/entreprise_store.php';
+require_once  dirname(__DIR__, 2) . '/src/api/enterprise_store.php';
 require_once  dirname(__DIR__, 2) . '/src/api/user_store.php';
+require_once  dirname(__DIR__, 2) . '/src/api/dek_store.php';    
 
-function register(PDO $pdo, array $data): ? array {
+function register(PDO $pdo, array $data): array {
     $email_index = get_hmask_index_mail($data['email']);
     $password_hash = hash_password($data['password']);
     $dek = generate_dek();
@@ -34,4 +35,4 @@ function register(PDO $pdo, array $data): ? array {
         throw $e;
     }
     return ['status' => 201, 'user' => ['user_id' => $user_id, 'role' => $data['role'], 'username' => $data['username'], 'email' =>$data['email'], 'nom' => $data['nom'], 'prenom' => $data['prenom'], 'telephone' => $data['telephone']]];
-}   
+}

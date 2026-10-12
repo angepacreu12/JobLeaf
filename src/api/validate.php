@@ -103,3 +103,19 @@ function validate_enum(array $array, string $field, array $allowed, bool $requir
     }
     json_response(400, ['error' => "$field: must be one of " . implode(', ', $allowed)]);
 }
+
+function validate_password(array $array, string $field, bool $required): ?string {
+    $value = $array[$field] ?? null;
+     if($value === null) {
+        json_response(400, ['error' => "$field: Is required"]);
+    }
+    if(is_string($value) === false ){
+        json_response(400, ['error' => "$field: Must be a string"]);
+    }
+    if (mb_strlen($value) < 12 || mb_strlen($value) > 256){
+        json_response(400, ['error' => "$field: Must be a string"]);
+    }
+    return $value;
+}
+
+function 

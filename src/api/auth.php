@@ -133,10 +133,17 @@ function handle_register(): never{
     if ($body === null){
         json_response(400, ['error' => 'Invalid JSON']);
     }
-    $email = $body['email'];
-    $password = $body('password');
-    $nom = $body['nom'];
-    $prenom = $body['prenom'];
-    $telephone = $body['telephone'];
-    $role = $data['role'];
+    $data['email'] = validate_email($body, 'email', true);
+    $data['nom']   = validate($body, 'nom', 1, 100, true);
+    $data['prenom'] = validate($body, 'prenom', 1, 100, true);
+    $data['telephone'] = validate_phone($body, 'telephone',true);
+    $data['nom_entreprise']	= validate($body, 'nom_entreprise', 1, 100, false);
+    $data['password'] = validate_password($body, 'password', 12, true);
+    if ($data['role'] === "entreprise"){
+        $data['nom_entreprise'] = validate($body, 'nom_entreprise', 1, 100, false);
+    }
+    $data['nom_entreprise'] === null;
+    $result = register(db(), $data);
+    
+
 }
