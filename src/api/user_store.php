@@ -61,3 +61,24 @@ function find_user_profile(PDO $pdo, string $user_id): ?array{
     $row = $stmt->fetch();
     return $row === false ? null : $row;
 }
+
+function create_user(PDO $pdo, array $user): string {
+    $stmt = $pdo->prepare(
+        "INSERT INTO users ( email_index, password_hash, email_chiffre,nom_chiffre, prenom_chiffre, telephone_chiffre, username, role, created_at, email_verifie)
+         VALUES ( :email_index, :password_hash, :email_chiffre, :nom_chiffre, :prenom_chiffre, :telephone_chiffre, :username, :role, now(), true)
+         RETURNING user_id"
+    );
+
+    $stmt->bindValue(':email_index', $user['email_index'], PDO::PARAM_LOB);
+    $stmt->bindValue(':password_hash', $user[':password_hash']);
+    $stmt->bindValue(':email_chiffre', $user['email_chiffre'], PDO::PARAM_LOB);
+    $stmt->bindValue(':nom_chiffre', $user['nom_chiffre'], PDO::PARAM_NULL);
+    $stmt->bindValue(':prenom_chiffre', $user[':prenom_chiffre'], PDO::PARAM_NULL);
+    $stmt->bindValue(':telephone_chiffre', $user['telephone_chiffre'], PDO::PARAM_NULL);
+    $stmt->bindValue(':username', $user['username']);
+    $stmt->bindValue(':role', $user['role']);
+
+    $stmt->execute();
+
+    return $stmt->fetchColumn();
+}
