@@ -117,5 +117,4 @@ function validate_password(array $array, string $field, bool $required): ?string
     }
     return $value;
 }
-
-function 
+ 
