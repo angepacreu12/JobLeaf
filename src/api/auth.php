@@ -135,12 +135,12 @@ function handle_register(): never{
     }
     $data = [];
     $data['email']     = validate_email($body, 'email', true);
-    $data['password']  = validate_password($body, 'password', true);
+    $data['password']  = validate_password($body, 'password');
     $data['role']      = validate_enum($body, 'role', ROLES_REGISTER, true);
     $data['nom']       = validate($body, 'nom', 1, 100, true);
     $data['prenom']    = validate($body, 'prenom', 1, 100, true);
     $data['telephone'] = validate_phone($body, 'telephone', false);
-    $data['username']  = validate($body, 'username', 1, 100, false);
+    $data['username']  = validate($body, 'username', 3, 30, true);
     if ($data['role'] === 'entreprise'){
         $data['nom_entreprise'] = validate($body, 'nom_entreprise', 1, 200, true);
     } else {

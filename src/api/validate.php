@@ -104,7 +104,7 @@ function validate_enum(array $array, string $field, array $allowed, bool $requir
     json_response(400, ['error' => "$field: must be one of " . implode(', ', $allowed)]);
 }
 
-function validate_password(array $array, string $field, bool $required): ?string {
+function validate_password(array $array, string $field): ?string {
     $value = $array[$field] ?? null;
      if($value === null) {
         json_response(400, ['error' => "$field: Is required"]);
