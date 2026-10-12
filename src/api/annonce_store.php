@@ -16,11 +16,11 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
         $params['ville'] = $filter['ville'];                   
     }
     if ($filter['type_contrat'] !== null){
-        $where[] = 'a.type_contrat) = :type_contrat';   
+        $where[] = 'a.type_contrat = :type_contrat';   
         $params['type_contrat'] = $filter['type_contrat'];
     }
     if ($filter['teletravail'] !== null){
-        $where[] = 'a.teletravail) = :teletravail';   
+        $where[] = 'a.teletravail = :teletravail';   
         $params['teletravail'] = $filter['teletravail'];
     }
     if ($filter['category'] !== null){
@@ -41,7 +41,7 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
 
     $stmt2 = $pdo->prepare(
         "SELECT a.annonce_id, a.reference, a.titre , left(a.description, 200) AS extrait , a.type_contrat, a.category, a.ville, a.date_publication , p.user_id AS entreprise_id, p.nom_entreprise
-         FROM annonce a JOIN profil_entreprise p ON ON p.user_id = a.entreprise_id
+         FROM annonce a JOIN profil_entreprise p ON p.user_id = a.entreprise_id
          WHERE $where_sql
          ORDER BY a.date_publication DESC, a.annonce_id DESC
          LIMIT :limit OFFSET :offset"
@@ -52,7 +52,7 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
     $stmt2->bindValue(':limit',$pagination['per_page'], PDO::PARAM_INT);
     $stmt2->bindValue(':offset', $pagination['offset'], PDO::PARAM_INT);
     $stmt2->execute();
-    $rows = $stmt->fetchAll();
+    $rows = $stmt2->fetchAll();
     
 
     $items = [];
@@ -61,19 +61,11 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
             'annonce_id'=> $row['annonce_id'],
             "reference"=> $row['reference'],
             "titre"=> $row['titre'],
-            "description"=> $row['description'],
+            "extrait"=> $row['description'],
             "type_contrat"=> $row['type_contrat'],
-            "category"=> $row['category'],
-            "teletravail"=> $row['teletravail'], 
-            "salaire_min"=> $row['salaire_min'],
-            "salaire_max"=> $row['salaire_max'], 
-            "niveau_experience"=> $row['niveau_experience'], 
+            "category"=> $row['category'], 
             "ville"=> $row['ville'], 
-            "statut"=> $row['statut'],
-            "date_publication"=> $row['date_publication'], 
-            "date_expiration"=> $row['date_expiration'],
-            "created_at"=> $row['created_at'], 
-            "updated_at"=> $row['updated_at'], 
+            "date_publication"=> $row['date_publication'],
             'entreprise'       => [
                 'user_id'        => $row['entreprise_id'],
                 'nom_entreprise' => $row['nom_entreprise'],
