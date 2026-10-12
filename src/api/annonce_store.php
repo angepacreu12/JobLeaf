@@ -61,7 +61,7 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
             'annonce_id'=> $row['annonce_id'],
             "reference"=> $row['reference'],
             "titre"=> $row['titre'],
-            "extrait"=> $row['description'],
+            "description"=> $row['extrait'],
             "type_contrat"=> $row['type_contrat'],
             "category"=> $row['category'], 
             "ville"=> $row['ville'], 
@@ -74,4 +74,50 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
     }
     
     return ['items' => $items, 'total' => $total];
+}
+
+function find_annonce(PDO $pdo, string $id): ?array {
+    $stmt = $pdo->prepare(
+        "SELECT a.annonce_id, a.reference, a.titre , a.description, a.type_contrat, a.category, a.teletravail, a.salaire_min, a.salaire_max, a.niveau_experience, a.ville, a.statut, a.ville, a.date_publication , a.date_expiration, p.user_id AS entreprise_id, p.nom_entreprise, a.created_at, a.updated_at, p.site_web, p.ville AS entreprise_ville
+         FROM annonce a JOIN profil_entreprise p ON p.user_id = a.entreprise_id
+         WHERE a.annonce_id = :id
+         "
+    );
+    $stmt->bindValue(':id',$id);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+    if($rows === false){
+        $rows = null;
+        return $rows;
+    }
+
+    $items = [];
+    foreach ($rows as $row) {
+        $items[] = [
+            "annonce_id"=> $row['annonce_id'],
+            "reference" => $row['reference'],
+            "titre"=> $row['titre'],
+            "description"=> $row['description'],
+            "type_contrat"=> $row['type_contrat'],
+            "category"=> $row['category'],
+            "teletravail"=> $row['teletravail'],
+            "salaire_min"=> $row['salaire_min'],
+            "salaire_max"=> $row['salaire_max'],
+            "niveau_experience" => $row['niveau_experience'],
+            "ville"=> $row['a.ville'],
+            "statut"=> $row['statut'],
+            "date_publication"=> $row['date_publication'],
+            "date_expiration"=> $row['date_expiration'],
+            "entreprise_id"=> $row['entreprise_id'],
+            "created_at"=> $row['created_at'],
+            "updated_at"=> $row['updated_at'],
+            'entreprise'       => [
+                'user_id'        => $row['entreprise_id'],
+                'nom_entreprise' => $row['nom_entreprise'],
+                'ville-entreprise' => $row['p.ville'],
+            ],
+        ];
+    }
+    
+    return ['annonce' => $items,];
 }

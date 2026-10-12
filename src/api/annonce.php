@@ -11,3 +11,11 @@ function handle_list_annonces(): never {
     $result = list_annonces(db(), $filter, $pagination);
     paginated_response($result['items'], $result['total'], $pagination);
 }
+
+function handle_get_annonce(string $id): never {
+    $annonce = find_annonce(db(), $id);
+    if ($annonce === null){
+        json_response(404, ['error' => "Not found"]);
+    }
+    json_response(200, $annonce);
+}

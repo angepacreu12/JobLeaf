@@ -171,7 +171,7 @@ Who: `entreprise`
 
 ## Users
 
-### 🚧 POST /api/users — register
+### ✅ POST /api/users — register
 Who: public
 Body:
 ```json
@@ -237,7 +237,7 @@ Body (any subset): `nom_entreprise`, `siret`, `secteur`, `ville`, `site_web`, `d
 
 ## Ads (annonces)
 
-### 🚧 GET /api/annonces
+### ✅ GET /api/annonces
 Who: public — only `publiee` and not past `date_expiration`. Newest first.
 Filters (all optional): `q` (text in title / description), `ville`, `type_contrat`, `category`, `teletravail`, `page`, `per_page`
 Item (short, for the board):
