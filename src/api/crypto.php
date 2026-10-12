@@ -5,14 +5,14 @@ require_once  dirname(__DIR__, 2) . '/src/api/config.php';
 require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 
 
-function get_hmask_index_mail($email) :string {
+function get_hmask_index_mail(string $email) :string {
     $hmask_key = get_HMAC_key();
     $normalise_mail = strtolower(trim($email));
     $email_index = hash_hmac("sha256", $normalise_mail, $hmask_key, true);
     return $email_index;
 }
 
-function check_password($password, string $hash) :bool {
+function check_password(string $password, string $hash) :bool {
     return password_verify($password, $hash);
 }
 
@@ -63,7 +63,6 @@ function unwrap_dek(string $dek_chiffree): string {
 }
 
 function hash_password(string $password): string {
-    $options = ['memory_cost', 65536, 'time_cost', 3, 'threads', 4];
+    $options = ['memory_cost'=> 65536, 'time_cost'=> 3, 'threads'=> 4];
     return password_hash($password, PASSWORD_ARGON2ID, $options);
-
 }
