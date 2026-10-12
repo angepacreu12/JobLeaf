@@ -107,7 +107,6 @@ function find_annonce(PDO $pdo, string $id): ?array {
         "statut"=> $row['statut'],
         "date_publication"=> $row['date_publication'],
         "date_expiration"=> $row['date_expiration'],
-        "entreprise_id"=> $row['entreprise_id'],
         "created_at"=> $row['created_at'],
         "updated_at"=> $row['updated_at'],
         'entreprise'       => [
@@ -119,4 +118,14 @@ function find_annonce(PDO $pdo, string $id): ?array {
         ];
     return $annonce;
 };
+
+function handle_apply(string $annonce_id): never {
+    $user = require_role('candidat');
+    $annonce = find_annonce(db(), $annonce_id);
+    if($annonce === null){
+        json_response(404, ['error' => "Not found"]);
+    }
+    $message = validate($_POST, 'message', 1, 5000, true);
+
+}
     
