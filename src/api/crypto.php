@@ -62,3 +62,8 @@ function unwrap_dek(string $dek_chiffree): string {
     return $decrypted_dek;
 }
 
+function hash_password(string $password): string {
+    $options = ['memory_cost', 65536, 'time_cost', 3, 'threads', 4];
+    return password_hash($password, PASSWORD_ARGON2ID, $options);
+
+}
