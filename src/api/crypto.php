@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 require_once  dirname(__DIR__, 2) . '/src/api/config.php';
 require_once  dirname(__DIR__,2) .'/src/api/check_time.php';
 
