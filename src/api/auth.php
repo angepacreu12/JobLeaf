@@ -133,17 +133,22 @@ function handle_register(): never{
     if ($body === null){
         json_response(400, ['error' => 'Invalid JSON']);
     }
-    $data['email'] = validate_email($body, 'email', true);
-    $data['nom']   = validate($body, 'nom', 1, 100, true);
-    $data['prenom'] = validate($body, 'prenom', 1, 100, true);
-    $data['telephone'] = validate_phone($body, 'telephone',true);
-    $data['nom_entreprise']	= validate($body, 'nom_entreprise', 1, 100, false);
-    $data['password'] = validate_password($body, 'password', 12, true);
-    if ($data['role'] === "entreprise"){
-        $data['nom_entreprise'] = validate($body, 'nom_entreprise', 1, 100, false);
+    $data = [];
+    $data['email']     = validate_email($body, 'email', true);
+    $data['password']  = validate_password($body, 'password', true);
+    $data['role']      = validate_enum($body, 'role', ROLES_REGISTER, true);
+    $data['nom']       = validate($body, 'nom', 1, 100, true);
+    $data['prenom']    = validate($body, 'prenom', 1, 100, true);
+    $data['telephone'] = validate_phone($body, 'telephone', false);
+    $data['username']  = $data['nom'] . '.' . $data['prenom'];
+    if ($data['role'] === 'entreprise'){
+        $data['nom_entreprise'] = validate($body, 'nom_entreprise', 1, 200, true);
+    } else {
+        $data['nom_entreprise'] = null;
     }
-    $data['nom_entreprise'] === null;
     $result = register(db(), $data);
-    
-
+    if ($result['status'] === 201) {
+        json_response(201, $result['user']);
+    }
+    json_response($result['status'], ['error' => $result['error']]);
 }
