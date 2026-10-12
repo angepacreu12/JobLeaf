@@ -22,7 +22,7 @@ function read_cv_upload(string $field): string {
         json_response(400, ['error' => "$field: upload failed"]);
     }
     if (is_uploaded_file($_FILES[$field]['tmp_name']) === false){
-        json_response(400, ['error' => "$field: upload failed"]);
+        json_response(404, ['error' => "$field: is required"]);
     }
     $tmp = $_FILES[$field]['tmp_name'];
     if (filesize($tmp) > MAX_CV_SIZE){
