@@ -45,7 +45,7 @@ function handle_get_cv(string $candidature_id): never {
     $user = current_user();
     $row = find_candidature_cv(db(), $candidature_id);
     if ($row === null){
-        json_response(400, ['error' => "Not Found"]);
+        json_response(404, ['error' => "Unknow id"]);
     }
     $is_candidate = $user['user_id'] === $row['candidat_id'];
     $is_owner     = $user['user_id'] === $row['entreprise_id'];
@@ -59,4 +59,11 @@ function handle_get_cv(string $candidature_id): never {
     $dek = get_user_dek(db(), $row['candidat_id']);
     $pdf = decrypt_field(bytea_to_string($row['cv_chiffre']), $dek);
     file_response($pdf, 'application/pdf', 'cv.pdf');
+}
+
+function handle_my_candidatures(): never {
+    $user = require_role('candidat');
+    $pagination = get_pagination();
+    $result = list_my_candidatures(db(), $user['user_id'], $pagination);
+    paginated_response($result['items'], $result['total'], $pagination);
 }
