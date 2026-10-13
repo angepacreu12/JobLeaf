@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <title>JobLeaf</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Font titre -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+        <link rel="stylesheet" href="login_page.css">
+        <script src="login_page.js" defer></script>
+
+    </head>
+    
+    <body>
+        
+        <header>
+            <h1 class="white playfair-display">JobLeaf</h1>
+            <h3 class="light-green playfair-display">Venez ajoutez une nouvelle feuille à votre arbre !</h3>          
+        </header>
+
+        <main>
+
+            <!-- Inscription -->
+
+            <div class="item centre">
+                <div class="item-gauche">
+                    <h4>Vous n'êtes toujours pas une feuille ?</h4>
+                    <p>Inscrivez-vous !</p>
+                    <button type="button" class="cadre bouton" data-cible="form-inscription" aria-expanded="false">S'inscrire</button>
+
+                    <form id="form-inscription" class="formulaire">
+
+                        <label for="insc-prenom">Prénom</label>
+                        <input type="text" id="insc-prenom" name="prenom" required>
+
+                        <label for="insc-nom">Nom</label>
+                        <input type="text" id="insc-nom" name="nom" required>
+
+                        <label for="insc-username">Nom d'utilisateur</label>
+                        <input type="text" id="insc-username" name="username" minlength="3" maxlength="30" required>
+
+                        <label for="insc-tel">Numéro de Téléphone</label>
+                        <input type="text" id="insc-tel" name="telephone" class="chiffres-seulement" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="10 chiffres nécéssaire">
+
+                        <label for="insc-email">Email</label>
+                        <input type="email" id="insc-email" name="email" required>
+
+                        <label for="insc-mdp">Mot de passe</label>
+                        <input type="password" id="insc-mdp" name="password" required>
+                        <p id="erreurs-mdp" class="red-text"></p>
+
+                        <label for="insc-profil">Je suis :</label>
+                        <select id="insc-profil" name="role">
+                            <option value="candidat">Employé-e</option>
+                            <option value="entreprise">Employeur</option> 
+                        </select>
+
+                        <div class="entreprise">
+
+                            <label for="insc-nom-entr">Nom entreprise</label>
+                            <input type="text" id="insc-nom-entr" name="nom_entreprise" required>
+
+                            <label for="insc-siret">Numéro SIRET</label>
+                            <input type="text" id="insc-siret" name="siret" class="chiffres-seulement" inputmode="numeric" pattern="[0-9]{14}" maxlength="14" title="14 chiffres nécéssaire" required>
+
+                            <label for="insc-secteur">Secteur principal</label>
+                            <input type="text" id="insc-secteur" name="secteur" required>
+
+                            <label for="insc-siege">Ville du siège</label>
+                            <input type="text" id="insc-siege" name="siege">
+
+                            <label for="insc-site">URL site entreprise</label>
+                            <input type="url" id="insc-site" name="site" placeholder="https://www.exemple.fr">
+
+                            <label for="insc-description">Description</label>
+                            <textarea id="insc-description" name="description" rows="5"></textarea>
+
+                        </div>
+
+                        <button type="submit" class="bouton">Créer mon compte</button>
+
+                    </form>
+
+                </div>
+
+                <!-- Connexion -->
+
+                <div class="item-droite centre">
+                    <h4>Vous êtes déjà une feuille ?</h4>
+                    <p>Connectez-vous !</p>
+                    <button type="button" class="cadre bouton" data-cible="form-connexion" aria-expanded="false">Se connecter</button>
+
+                    <form id="form-connexion" class="formulaire">
+
+                        <label for="co-email">Email</label>
+                        <input type="email" id="co-email" name="email" required>
+
+                        <label for="co-mdp">Mot de passe</label>
+                        <input type="password" id="co-mdp" name="password" required>
+
+                        <p id="erreurs-connexion" class="red-text"></p>
+
+                        <button type="submit" class="bouton">Se connecter</button>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer class="light-green">
+
+            <nav>
+                <ul>
+                    <li><a href="a_propos.html">A propos</a></li>
+                    <!-- <li><a href="php.html">Conditions générale & confidentialité</a></li> -->
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+
+            <p class="nom">
+                Ange PACREU <br>
+                Léa BOSSUAT <br>
+                Epitech Montpellier - 2026
+            </p>
+
+        </footer>
+    </body>
+</html>
