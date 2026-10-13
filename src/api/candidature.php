@@ -128,12 +128,14 @@ function decrypt_candidatures(PDO $pdo, array $rows): array {
 function handle_update_candidature(string $candidature_id): never {
     $user = require_role('entreprise', 'admin');
     $row = find_candidature_row(db(), $candidature_id);
-    $is_owner = $user['user_id'] === $row['entreprise_id'];
-    $is_admin = $user['role'] === 'admin';
-    if (!$is_admin & !$is_owner && !$is_admin) {
+    if ($row === null){
         json_response(404, ['error' => 'Not found']);
     }
-    //    neither -> 404
+    $is_owner = $user['user_id'] === $row['entreprise_id'];
+    $is_admin = $user['role'] === 'admin';
+    if (!$is_admin & !$is_owne) {
+        json_response(404, ['error' => 'Not found']);
+    }
     $body = read_json_body();
     if($body === null){
         json_response(400, ['error' => 'Invalid JSON']);

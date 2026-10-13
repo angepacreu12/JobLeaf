@@ -137,10 +137,11 @@ function find_candidature_row(PDO $pdo, string $candidature_id): ?array {
 
 function update_candidature_statut(PDO $pdo, string $candidature_id, string $statut): void {
     $stmt =  $pdo->prepare(
-        'UPDATE andidature
+        'UPDATE candidature
          SET statut = :statut
          WHERE candidature_id = :id'
     );
     $stmt->bindValue(':id', $candidature_id);
+    $stmt->bindValue(':statut', $statut);
     $stmt->execute();
 }
