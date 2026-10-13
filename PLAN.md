@@ -27,7 +27,7 @@ Legend: ✅ done · 🚧 to do · ⚠️ blocking for the front
 - ✅ `POST /api/annonces/{id}/candidatures` | multipart, `message` 1–5000 required, CV PDF ≤ 2 MB required, encrypted with the candidate's DEK, one transaction: `candidature` + first `message`, 409 if already applied ⚠️ |
 - ✅ `GET /api/candidatures/{id}/cv` | decrypt, send the PDF, candidate / owner company / admin only (others 404) |
 - ✅ `GET /api/me/candidatures` | candidate's own applications |
-- 🚧 `GET /api/annonces/{id}/candidatures` | owner company / admin, decrypted with each candidate's DEK |
+- ✅ `GET /api/annonces/{id}/candidatures` | owner company / admin, decrypted with each candidate's DEK |
 
 ## D3 — Tuesday 13 October 🚧 — applications + company ads
 
