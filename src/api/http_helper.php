@@ -68,3 +68,14 @@ function get_pagination(): array {
 function paginated_response(array $items, int $total, array $pagination): never {
     json_response(200, ['items' => $items, 'page' => $pagination['page'], 'per_page' => $pagination['per_page'], 'total' => $total]);
 }
+
+function file_response(string $content, string $mime, string $filename): never {
+    http_response_code(200);
+    header('Content-Type: ' . $mime);
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($content));
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: private, no-store');
+    echo $content;
+    exit;
+}

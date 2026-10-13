@@ -15,3 +15,18 @@ function create_candidature(PDO $pdo, string $annonce_id, string $candidat_id, s
     $stmt->execute();
     return $stmt->fetch();
 }
+
+function find_candidature_cv(PDO $pdo, string $candidature_id): ?array {
+    $stmt = $pdo->prepare(
+        'SELECT c.candidat_id, c.cv_chiffre, a.entreprise_id
+         FROM candidature c JOIN annonce a ON a.annonce_id = c.annonce_id
+         WHERE c.candidature_id = :id'
+    );
+    $stmt->bindValue(':id', $candidature_id);
+    $stmt->execute();
+    $value = $stmt->fetch();
+    if ($value === false){
+        return null;
+    }
+    return $value;
+}
