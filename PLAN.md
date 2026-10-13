@@ -33,7 +33,7 @@ Legend: ✅ done · 🚧 to do · ⚠️ blocking for the front
 
 | Route | Notes |
 |---|---|
-| `PATCH /api/candidatures/{id}` | status change, owner company / admin |
+- ✅ `PATCH /api/candidatures/{id}` | status change, owner company / admin |
 | `POST /api/annonces` | company (or admin + `entreprise_id`), generates `reference` |
 | `PATCH /api/annonces/{id}` | owner / admin, PATCH rules (`array_key_exists`, column whitelist) |
 | `DELETE /api/annonces/{id}` | owner / admin, cascades applications + messages |

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+
+    <head>
+
+        <meta charset="UTF-8">
+        <title>JobLeaf</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+        <!-- Font titre -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+        <!-- Couleur & police utilisable comme classes -->
+
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+
+        <script src="page_employe.js" defer></script>
+
+    </head>
+    
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>         
+        </header>
+
+        <main class="flex flex-1 relative">
+
+            <aside class="flex flex-col items-center pt-5 min-w-[110px] bg-vert-clair">
+
+                    <a href="profil.html" class="group">
+                        <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil" 
+                            class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                    </a>
+    
+                    <a href="document.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Documents</a>
+    
+                    <a href="offres.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Mes offres</a>
+
+                    
+                    <!-- Bulle message -->
+                    
+                    <section id="bulle-messages"
+                    class="absolute left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
+                    
+                        <!-- Bulle repliée -->
+                        
+                        <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations" 
+                        class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                        </svg>
+                        </button>
+                    
+                        <!-- Bulle dépliée -->
+                        
+                        <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
+                            
+                            <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
+                                <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
+                                <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
+                                class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        
+                            <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                            
+                            <template id="modele-conversation">
+                                <li>
+                                    <a href="#" class="flex gap-3 px-4 py-3 hover:bg-beige-coton">
+                                        <img src="image/avatar-defaut.png" alt="" class="h-10 w-10 shrink-0 rounded-full object-cover">
+                                        <span class="min-w-0 flex-1">
+                                            <span class="flex justify-between gap-2">
+                                                <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                                <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                            </span>
+                                            <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                                        </span>
+                                    </a>
+                                </li>
+                            </template>
+                
+                        </div>
+            
+                    </section>
+        
+            </aside>
+
+            <!-- Barre de recherche -->
+
+            <div class="flex-1 flex flex-col items-center pl-1 pt-5">
+
+                <form class="flex border rounded-[50px] px-2 py-1 bg-white max-w-[250px] focus-within:border-vert-jobleaf focus-within:ring-2 focus-within:ring-vert-clair">
+
+                    <input type="search" placeholder="Rechercher une annonce" class="outline-none">
+                    <button aria-label="Rechercher">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                    </button>
+
+                </form>
+
+                
+                <!-- Cadre annonce -->
+                
+                <section id="cadre-annonce" class="mt-6 bg-white w-65 h-30 rounded-lg">
+                    
+                    <!-- Cadre annonce replié -->
+
+                    <div class="flex-1 flex flex-col items-left pb-9">
+
+                        <a href="#" class="flex gap-3">
+                            <img src="image/avatar-defaut.png" alt="" class="h-13 w-13 shrink-0 rounded-full object-cover">
+                            <span class="min-w-0 flex-1">
+                                <span data-champ="titre" class=" block truncate font-bold text-vert-fonce text-base"></span>
+                                <span data-champ="entreprise" class=" block truncate font-semibold text-vert-fonce text-sm"></span>
+                                <span data-champ="ville" class="block truncate text-sm text-vert-fonce"></span>
+                                <span data-champ="type_contrat" class="block truncate text-sm text-vert-fonce"></span>
+                                <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                            </span>
+                        </a>
+
+                    </div>
+                    
+                </section>
+
+            </div>
+                
+        </main>
+
+    </body>
+    
