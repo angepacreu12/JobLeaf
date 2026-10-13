@@ -75,5 +75,35 @@ function handle_annonce_candidatures(string $annonce_id): never {
         json_response(404, ['error' => 'Not found']);
     }  
     $pagination = get_pagination();
-    // NOT FINISH BUT FUCKKKKK
+    $result = list_annonce_candidatures(db(), $annonce_id, $pagination);
+    $items  = decrypt_candidatures(db(), $result['rows']);
+    paginated_response($items, $result['total'], $pagination);
+}
+
+function decrypt_candidatures(PDO $pdo, array $rows): array {
+    $items = [];
+    foreach ($rows as $row) {
+        $dek = get_user_dek($pdo, $row['candidat_id']);
+        $email_candidat = decrypt_field(bytea_to_string($row['email_chiffre']), $dek);
+        $nom_candidat = decrypt_field(bytea_to_string($row['nom_chiffre']), $dek);
+        $prenom_candidat = decrypt_field(bytea_to_string($row['prenom_chiffre']), $dek);
+        $telephone_candidat = decrypt_field(bytea_to_string($row['telephone_chiffre']), $dek);
+        $message_candidat = decrypt_field(bytea_to_string($row['message_chiffre']), $dek);
+
+        $items[] = [
+              'candidature_id'=> $row['candidature_id'], 
+              'statut'=> $row['statut'], 
+              'date_candidature'=> $row['date_candidature'], 
+              'has_cv'=> $row['has_cv'],
+              'message'  => $message_candidat,
+              'candidat' => [ 
+                 'user_id' => $row['candidat_id'], 
+                 'nom'=> $nom_candidat, 
+                 'prenom'=> $prenom_candidat, 
+                 'email'=> $email_candidat, 
+                 'telephone'=> $telephone_candidat, 
+                ],
+            ];
+    }
+    return $items;
 }

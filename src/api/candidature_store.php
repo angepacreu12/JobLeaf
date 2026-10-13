@@ -91,3 +91,38 @@ function find_annonce_owner(PDO $pdo, string $annonce_id): ?string {
     }
     return $entreprise_id;
 }
+
+function list_annonce_candidatures(PDO $pdo, string $annonce_id, array $pagination): array {
+    $stmt = $pdo->prepare(
+        'SELECT count(*) 
+         FROM candidature c 
+         WHERE c.candidat_id = :annonce_id'
+    );
+    $stmt->bindValue(':annonce_id', $annonce_id);
+    $stmt->execute();
+    $total = (int) $stmt->fetchColumn();
+    
+    $stmt2 =  $pdo->prepare(
+        'SELECT c.candidature_id, c.statut, c.date_candidature,
+         (c.cv_chiffre IS NOT NULL) AS has_cv,
+         c.candidat_id,
+         u.email_chiffre, u.nom_chiffre, u.prenom_chiffre, u.telephone_chiffre,
+         (SELECT m.contenu_chiffre
+          FROM message m
+          WHERE m.candidature_id = c.candidature_id
+          ORDER BY m.date_envoi, m.message_id
+          LIMIT 1) AS message_chiffre
+         FROM candidature c
+         JOIN users u ON u.user_id = c.candidat_id
+         WHERE c.annonce_id = :annonce_id
+         ORDER BY c.date_candidature DESC, c.candidature_id DESC
+         LIMIT :limit OFFSET :offset'
+    );
+    $stmt2->bindValue(':annonce_id', $annonce_id);
+    $stmt2->bindValue(':limit',  $pagination['per_page'], PDO::PARAM_INT);
+    $stmt2->bindValue(':offset', $pagination['offset'],   PDO::PARAM_INT);
+    $stmt2->execute();
+    $rows = $stmt2->fetchAll();
+
+    return ['rows' => $rows, 'total' => $total];
+}
