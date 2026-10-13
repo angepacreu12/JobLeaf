@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 function create_dek(PDO $pdo, string $user_id, string $dek_chiffree): void {
     $stmt = $pdo->prepare(
         'INSERT INTO "DEK" (user_id, dek_chiffree, version_master_key)

@@ -124,3 +124,22 @@ function decrypt_candidatures(PDO $pdo, array $rows): array {
     }
     return $items;
 }
+
+function handle_update_candidature(string $candidature_id): never {
+    $user = require_role('entreprise', 'admin');
+    $row = find_candidature_row(db(), $candidature_id);
+    $is_owner = $user['user_id'] === $row['entreprise_id'];
+    $is_admin = $user['role'] === 'admin';
+    if (!$is_admin & !$is_owner && !$is_admin) {
+        json_response(404, ['error' => 'Not found']);
+    }
+    //    neither -> 404
+    $body = read_json_body();
+    if($body === null){
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $statut = validate_enum($body, 'statut', STATUTS_CANDIDATURE, true);
+    update_candidature_statut(db(), $candidature_id, $statut);
+    $row = find_candidature_row(db(), $candidature_id);
+    json_response(200, decrypt_candidatures(db(), [$row])[0]);
+}

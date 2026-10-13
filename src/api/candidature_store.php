@@ -112,3 +112,35 @@ function list_annonce_candidatures(PDO $pdo, string $annonce_id, array $paginati
 
     return ['rows' => $rows, 'total' => $total];
 }
+
+function find_candidature_row(PDO $pdo, string $candidature_id): ?array {
+    $stmt =  $pdo->prepare(
+        'SELECT c.candidature_id, c.statut, c.date_candidature,
+         (c.cv_chiffre IS NOT NULL) AS has_cv,
+         c.candidat_id,
+         u.email_chiffre, u.nom_chiffre, u.prenom_chiffre, u.telephone_chiffre, a.entreprise_id,
+         (SELECT m.contenu_chiffre
+         FROM message m
+         WHERE m.candidature_id = c.candidature_id
+         ORDER BY m.date_envoi, m.message_id
+         LIMIT 1) AS message_chiffre
+         FROM candidature c
+         JOIN annonce a ON a.annonce_id = c.annonce_id
+         JOIN users u ON u.user_id = c.candidat_id
+         WHERE c.candidature_id = :id'
+    );
+    $stmt->bindValue(':id', $candidature_id);
+    $stmt->execute();
+    $row = $stmt->fetch();
+    return $row === false ? null : $row;
+}
+
+function update_candidature_statut(PDO $pdo, string $candidature_id, string $statut): void {
+    $stmt =  $pdo->prepare(
+        'UPDATE andidature
+         SET statut = :statut
+         WHERE candidature_id = :id'
+    );
+    $stmt->bindValue(':id', $candidature_id);
+    $stmt->execute();
+}

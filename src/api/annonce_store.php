@@ -76,15 +76,14 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
     return ['items' => $items, 'total' => $total];
 }
 
-function find_annonce(PDO $pdo, string $id): ?array {
-    $stmt = $pdo->prepare(
-        "SELECT a.annonce_id, a.reference, a.titre , a.description, a.type_contrat, a.category, a.teletravail, a.salaire_min, a.salaire_max, a.niveau_experience, a.ville, a.statut, a.date_publication , a.date_expiration, p.user_id AS entreprise_id, p.nom_entreprise, a.created_at, a.updated_at, p.site_web, p.ville AS entreprise_ville
+function find_annonce(PDO $pdo, string $id, bool $only_open = true): ?array {
+    $sql = "SELECT a.annonce_id, a.reference, a.titre , a.description, a.type_contrat, a.category, a.teletravail, a.salaire_min, a.salaire_max, a.niveau_experience, a.ville, a.statut, a.date_publication , a.date_expiration, p.user_id AS entreprise_id, p.nom_entreprise, a.created_at, a.updated_at, p.site_web, p.ville AS entreprise_ville
          FROM annonce a JOIN profil_entreprise p ON p.user_id = a.entreprise_id
-         WHERE a.annonce_id = :id
-         AND a.statut = 'publiee'
-         AND (a.date_expiration IS NULL OR a.date_expiration > now())
-         "
-    );
+         WHERE a.annonce_id = :id";
+    if ($only_open === true){
+    $sql .= " AND a.statut = 'publiee' AND (a.date_expiration IS NULL OR a.date_expiration > now())";
+    }
+    $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id',$id);
     $stmt->execute();
     $row = $stmt->fetch();
