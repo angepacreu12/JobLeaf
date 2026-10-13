@@ -133,7 +133,7 @@ function handle_update_candidature(string $candidature_id): never {
     }
     $is_owner = $user['user_id'] === $row['entreprise_id'];
     $is_admin = $user['role'] === 'admin';
-    if (!$is_admin & !$is_owne) {
+    if (!$is_admin & !$is_owner) {
         json_response(404, ['error' => 'Not found']);
     }
     $body = read_json_body();
