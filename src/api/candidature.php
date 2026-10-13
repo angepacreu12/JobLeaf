@@ -71,15 +71,32 @@ function handle_my_candidatures(): never {
 function handle_annonce_candidatures(string $annonce_id): never {
     $user = require_role('entreprise', 'admin');
     $owner = find_annonce_owner(db(), $annonce_id);
-    if($user['role'] != 'admin' && $owner !== $user['user_id']){
+    if ($owner === null) {
         json_response(404, ['error' => 'Not found']);
-    }  
+    }
+    if($user['role'] !== 'admin' && $owner !== $user['user_id']){
+        json_response(404, ['error' => 'Not found']);
+    } 
     $pagination = get_pagination();
     $result = list_annonce_candidatures(db(), $annonce_id, $pagination);
     $items  = decrypt_candidatures(db(), $result['rows']);
     paginated_response($items, $result['total'], $pagination);
 }
 
+function find_annonce_owner(PDO $pdo, string $annonce_id): ?string {
+    $stmt = $pdo->prepare(
+        'SELECT entreprise_id 
+         FROM annonce 
+         WHERE annonce_id = :id'
+    );
+    $stmt->bindValue(':id', $annonce_id);
+    $stmt->execute();
+    $entreprise_id = $stmt->fetchColumn();
+    if ($entreprise_id === false){
+        return null;
+    }
+    return $entreprise_id;
+}
 function decrypt_candidatures(PDO $pdo, array $rows): array {
     $items = [];
     foreach ($rows as $row) {

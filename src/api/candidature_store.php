@@ -77,26 +77,12 @@ function list_my_candidatures(PDO $pdo, string $user_id, array $pagination): arr
     return ['items' => $items, 'total' => $total];
 }
 
-function find_annonce_owner(PDO $pdo, string $annonce_id): ?string {
-    $stmt = $pdo->prepare(
-        'SELECT entreprise_id 
-         FROM annonce 
-         WHERE annonce_id = :id'
-    );
-    $stmt->bindValue(':id', $annonce_id);
-    $stmt->execute();
-    $entreprise_id = $stmt->fetchColumn();
-    if ($entreprise_id === false){
-        return null;
-    }
-    return $entreprise_id;
-}
 
 function list_annonce_candidatures(PDO $pdo, string $annonce_id, array $pagination): array {
     $stmt = $pdo->prepare(
         'SELECT count(*) 
          FROM candidature c 
-         WHERE c.candidat_id = :annonce_id'
+         WHERE c.annonce_id = :annonce_id'
     );
     $stmt->bindValue(':annonce_id', $annonce_id);
     $stmt->execute();
