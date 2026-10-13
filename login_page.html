@@ -35,7 +35,7 @@
                     <p>Inscrivez-vous !</p>
                     <button type="button" class="cadre bouton" data-cible="form-inscription" aria-expanded="false">S'inscrire</button>
 
-                    <form id="form-inscription" class="formulaire" action="./public/api/index.php" method="post">
+                    <form id="form-inscription" class="formulaire">
 
                         <label for="insc-prenom">Prénom</label>
                         <input type="text" id="insc-prenom" name="prenom" required>
@@ -43,22 +43,29 @@
                         <label for="insc-nom">Nom</label>
                         <input type="text" id="insc-nom" name="nom" required>
 
+                        <label for="insc-username">Nom d'utilisateur</label>
+                        <input type="text" id="insc-username" name="username" minlength="3" maxlength="30" required>
+
+                        <label for="insc-tel">Numéro de Téléphone</label>
+                        <input type="text" id="insc-tel" name="telephone" class="chiffres-seulement" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" title="10 chiffres nécéssaire">
+
                         <label for="insc-email">Email</label>
                         <input type="email" id="insc-email" name="email" required>
 
                         <label for="insc-mdp">Mot de passe</label>
-                        <input type="password" id="insc-mdp" name="mdp" required>
+                        <input type="password" id="insc-mdp" name="password" required>
+                        <p id="erreurs-mdp" class="red-text"></p>
 
                         <label for="insc-profil">Je suis :</label>
-                        <select id="insc-profil" name="profil">
-                            <option value="employe">Employé-e</option>
-                            <option value="employeur">Employeur</option> 
+                        <select id="insc-profil" name="role">
+                            <option value="candidat">Employé-e</option>
+                            <option value="entreprise">Employeur</option> 
                         </select>
 
-                        <div class="employeur">
+                        <div class="entreprise">
 
                             <label for="insc-nom-entr">Nom entreprise</label>
-                            <input type="text" id="insc-nom-entr" name="nom-entr" required>
+                            <input type="text" id="insc-nom-entr" name="nom_entreprise" required>
 
                             <label for="insc-siret">Numéro SIRET</label>
                             <input type="text" id="insc-siret" name="siret" class="chiffres-seulement" inputmode="numeric" pattern="[0-9]{14}" maxlength="14" title="14 chiffres nécéssaire" required>
@@ -90,13 +97,15 @@
                     <p>Connectez-vous !</p>
                     <button type="button" class="cadre bouton" data-cible="form-connexion" aria-expanded="false">Se connecter</button>
 
-                    <form id="form-connexion" class="formulaire" action="./public/api/index.php" method="post">
+                    <form id="form-connexion" class="formulaire">
 
                         <label for="co-email">Email</label>
                         <input type="email" id="co-email" name="email" required>
 
                         <label for="co-mdp">Mot de passe</label>
-                        <input type="password" id="co-mdp" name="mdp" required>
+                        <input type="password" id="co-mdp" name="password" required>
+
+                        <p id="erreurs-connexion" class="red-text"></p>
 
                         <button type="submit" class="bouton">Se connecter</button>
 

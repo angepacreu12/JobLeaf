@@ -165,11 +165,11 @@ h3 {
 
 /* Form employeur caché par défaut */
 
-.employeur {
+.entreprise {
     display: none;
 }
 
-.employeur.visible {
+.entreprise.visible {
     display: grid;
     gap: 0.3rem;
 }
