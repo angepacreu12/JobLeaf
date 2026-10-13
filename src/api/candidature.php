@@ -67,3 +67,13 @@ function handle_my_candidatures(): never {
     $result = list_my_candidatures(db(), $user['user_id'], $pagination);
     paginated_response($result['items'], $result['total'], $pagination);
 }
+
+function handle_annonce_candidatures(string $annonce_id): never {
+    $user = require_role('entreprise', 'admin');
+    $owner = find_annonce_owner(db(), $annonce_id);
+    if($user['role'] != 'admin' && $owner !== $user['user_id']){
+        json_response(404, ['error' => 'Not found']);
+    }  
+    $pagination = get_pagination();
+    // NOT FINISH BUT FUCKKKKK
+}

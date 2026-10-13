@@ -17,7 +17,7 @@ $routes = [
     '#^/api/users$#' => ['POST' => 'handle_register'],
     '#^/api/annonces$#'  => ['GET' => 'handle_list_annonces'], ///'POST' => 'handle_create_annonce'],
     '#^/api/annonces/(' . UUID_RE . ')$#'  => ['GET' => 'handle_get_annonce'],//,   'PATCH' => 'handle_update_annonce'],
-    '#^/api/annonces/(' . UUID_RE . ')/candidatures$#' => ['POST' => 'handle_apply'],
+    '#^/api/annonces/(' . UUID_RE . ')/candidatures$#' => ['POST' => 'handle_apply', 'GET' => 'handle_annonce_candidatures'],
     '#^/api/candidatures/(' . UUID_RE . ')/cv$#' => ['GET' => 'handle_get_cv'],
 ];
 
