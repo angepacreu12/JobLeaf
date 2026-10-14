@@ -47,3 +47,13 @@ function delete_session(PDO $pdo,string $token_hash) : void{
     $stmt->execute();
 
 }
+
+function delete_other_sessions(PDO $pdo, string $user_id, string $keep_token_hash): void {
+    $stmt = $pdo->prepare(
+        'DELETE FROM session
+         WHERE user_id = :user_id AND token_hash <> :keep'
+    );
+    $stmt->bindValue(':user_id', $user_id);
+    $stmt->bindValue(':keep', $keep_token_hash, PDO::PARAM_LOB);
+    $stmt->execute();
+}

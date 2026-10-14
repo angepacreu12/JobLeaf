@@ -77,3 +77,32 @@ function handle_delete_user(string $user_id): never {
     empty_response(204);
 }
 
+function handle_change_password(): never {
+    $user = current_user();
+    $body = read_json_body();
+    if ($body === null) {
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $old = get_string($body, 'old_password');
+    if ($old === null || $old === '') {
+        json_response(400, ['error' => 'old_password: is required']);
+    }
+    $new = validate_password($body, 'new_password', true);
+
+    $hash = find_password_hash(db(), $user['user_id']);
+    if ($hash === null || check_password($old, $hash) === false) {
+        json_response(401, ['error' => 'Invalid password']);
+    }
+
+    $pdo = db();
+    $pdo->beginTransaction();
+    try {
+        update_password_hash($pdo, $user['user_id'], hash_password($new));
+        delete_other_sessions($pdo, $user['user_id'], hash_token($_COOKIE[SESSION_COOKIE]));
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+    json_response(200, ['status' => 'Password changed']);
+}

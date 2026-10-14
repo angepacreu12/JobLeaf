@@ -99,3 +99,10 @@ function delete_user(PDO $pdo, string $user_id): void {
     $stmt->bindValue(':id', $user_id);
     $stmt->execute();
 }
+
+function update_password_hash(PDO $pdo, string $user_id, string $password_hash): void {
+    $stmt = $pdo->prepare('UPDATE users SET password_hash = :hash WHERE user_id = :id');
+    $stmt->bindValue(':hash', $password_hash);
+    $stmt->bindValue(':id', $user_id);
+    $stmt->execute();
+}
