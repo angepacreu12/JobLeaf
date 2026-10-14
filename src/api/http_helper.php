@@ -3,6 +3,7 @@
 declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/src/api/validate.php';
 
+const MAX_JSON_BODY = 65536;
 const SESSION_COOKIE = 'session';
 const MAX_JSON_BODY = 10000;
 const MAX_USER_AGENT = 500;
@@ -77,5 +78,10 @@ function file_response(string $content, string $mime, string $filename): never {
     header('X-Content-Type-Options: nosniff');
     header('Cache-Control: private, no-store');
     echo $content;
+    exit;
+}
+
+function empty_response(int $status): never {
+    http_response_code($status);
     exit;
 }

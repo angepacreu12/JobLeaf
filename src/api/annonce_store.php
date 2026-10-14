@@ -118,19 +118,24 @@ function find_annonce(PDO $pdo, string $id, bool $only_open = true): ?array {
     return $annonce;
 };
 
-function next_reference(PDO $pdo, string $entreprise_id): string {
+function next_reference(PDO $pdo, string $entreprise_id): ?string {
     $stmt = $pdo->prepare(
-        'SELECT nom_entreprise, 
-        (SELECT count(*) FROM annonce WHERE entreprise_id = :id1) AS n
-         FROM profil_entreprise WHERE user_id = :id2'
+        "SELECT nom_entreprise,
+                (SELECT COALESCE(MAX(split_part(reference, '-', 4)::int), 0)
+                 FROM annonce WHERE entreprise_id = :id1) AS n
+         FROM profil_entreprise
+         WHERE user_id = :id2"
     );
-    $stmt->bindValue(':id1',$id);
-    $stmt->bindValue(':id2',$id);
+    $stmt->bindValue(':id1', $entreprise_id);
+    $stmt->bindValue(':id2', $entreprise_id);
+    $stmt->execute();
     $row = $stmt->fetch();
-
+    if ($row === false) {
+        return null;
+    }
     $letters = preg_replace('/[^A-Z]/', '', strtoupper($row['nom_entreprise']));
     $code = substr($letters . 'XXX', 0, 3);
-    return date('y-m') . '-' . $code . '-' . sprintf('%02d', $n + 1);
+    return date('y-m') . '-' . $code . '-' . sprintf('%02d', (int) $row['n'] + 1);
 }
 
 function create_annonce(PDO $pdo, array $a): string {
@@ -143,8 +148,7 @@ function create_annonce(PDO $pdo, array $a): string {
          VALUES (:reference, :titre, :description, :type_contrat, :category, :teletravail,
          :salaire_min, :salaire_max, :niveau_experience, :ville, :statut, $publication,
          :date_expiration, :entreprise_id, now(), now())
-         RETURNING annonce_id
-         date_publication: now() when statut is 'publiee', otherwise NULL"
+         RETURNING annonce_id"
     );
     $columns = ['reference', 'titre', 'description', 'type_contrat', 'category', 'teletravail',
             'salaire_min', 'salaire_max', 'niveau_experience', 'ville', 'statut',
@@ -152,8 +156,63 @@ function create_annonce(PDO $pdo, array $a): string {
     foreach ($columns as $column) {
         $stmt->bindValue(':' . $column, $a[$column]);
     }
+    $stmt->execute();
     return $stmt->fetchColumn();
 }
 
+function list_my_annonces(PDO $pdo, string $entreprise_id, array $pagination): array {
+    $stmt = $pdo->prepare(
+        'SELECT count(*) FROM annonce WHERE entreprise_id = :entreprise_id'
+    );
+    $stmt->bindValue(':entreprise_id', $entreprise_id);
+    $stmt->execute();
+    $total = (int) $stmt->fetchColumn();
 
+    $stmt2 = $pdo->prepare(
+        'SELECT a.annonce_id, a.reference, a.titre, a.statut, a.type_contrat, a.ville,
+                a.date_publication, a.date_expiration,
+                (SELECT count(*) FROM candidature c WHERE c.annonce_id = a.annonce_id) AS nb_candidatures
+         FROM annonce a
+         WHERE a.entreprise_id = :entreprise_id
+         ORDER BY a.created_at DESC, a.annonce_id DESC
+         LIMIT :limit OFFSET :offset'
+    );
+    $stmt2->bindValue(':entreprise_id', $entreprise_id);
+    $stmt2->bindValue(':limit', $pagination['per_page'], PDO::PARAM_INT);
+    $stmt2->bindValue(':offset', $pagination['offset'], PDO::PARAM_INT);
+    $stmt2->execute();
+
+    $items = [];
+    foreach ($stmt2->fetchAll() as $row) {
+        $row['nb_candidatures'] = (int) $row['nb_candidatures'];
+        $items[] = $row;
+    }
+    return ['items' => $items, 'total' => $total];
+}
+
+function delete_annonce(PDO $pdo, string $annonce_id): void {
+    $stmt = $pdo->prepare(
+        "DELETE FROM annonce 
+         WHERE annonce_id = :id"
+    );
+    $stmt->bindValue(':id',$annonce_id);
+    $stmt->execute();
+}
+
+function update_annonce(PDO $pdo, string $annonce_id, array $changes): void {
+    $sets = [];
+    foreach ($changes as $column => $value) {
+        $sets[] = "$column = :$column";
+    }
+    $sets[] = 'updated_at = now()';
+    if (($changes['statut'] ?? null) === 'publiee') {
+        $sets[] = 'date_publication = COALESCE(date_publication, now())';
+    }
+    $stmt = $pdo->prepare('UPDATE annonce SET ' . implode(', ', $sets) . ' WHERE annonce_id = :id');
+    foreach ($changes as $column => $value) {
+        $stmt->bindValue(':' . $column, $value);
+    }
+    $stmt->bindValue(':id', $annonce_id);
+    $stmt->execute();
+}
     

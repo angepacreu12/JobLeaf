@@ -1,7 +1,7 @@
 # Jobleaf API
 
 Contract between the back end (PHP) and the front end.
-Legend: ✅ done · 🚧 to do · ❓ to decide
+Legend: ✅ done · 🧪 written, not tested yet · 🚧 to do · ❓ to decide · ✂️ cut (not delivered)
 
 ---
 
@@ -14,9 +14,10 @@ Legend: ✅ done · 🚧 to do · ❓ to decide
 | Auth | `session` cookie (HttpOnly, Secure, SameSite=Lax, 1 h), set by `POST /api/login`. The front never reads it: the browser sends it by itself (`fetch` default `credentials: 'same-origin'`) |
 | Errors | Always `{"error": "message"}`. For field errors: `"<field>: <reason>"` |
 | IDs | UUID v7, lowercase, e.g. `01a129ba-aeea-73ed-8929-69169825b117`. Bad id in the URL → 404 |
-| Dates | ISO 8601 with timezone, e.g. `2026-10-11T09:30:00+02:00` |
+| Dates | ISO 8601 with timezone, e.g. `2026-10-11T09:30:00+02:00`. ⚠️ Currently returned in Postgres format (`2026-09-23 02:04:43+00`), fix in progress |
 | Empty value | To clear an optional field, send `null`. `""` is refused (400) |
 | PATCH | Send only the fields you change. Missing field = unchanged, `null` = cleared |
+| Body size | JSON body max 64 KB. Above that the API answers 400 `Invalid JSON` |
 
 ### Pagination (every list)
 
@@ -50,6 +51,12 @@ Number of pages = `ceil(total / per_page)`. A page past the end returns `items: 
 | `telephone` | digits, optional leading `+`, 6–15 digits (spaces . - ( ) / , are removed) |
 | `salaire_min`, `salaire_max` | whole euros, 0–1 000 000, `salaire_max` ≥ `salaire_min` |
 | CV | PDF only, max 2 MB |
+| `nom_entreprise` | 1–200 characters |
+| `titre` (ad) | 3–150 characters |
+| `description` (ad) | 10–5000 characters |
+| `ville`, `niveau_experience` | 1–100 characters |
+| `date_expiration` | ISO 8601 date |
+| `message`, `contenu` | 1–5000 characters |
 
 ### Status codes
 
@@ -140,17 +147,17 @@ Body: `{ "old_password": "...", "new_password": "..." }`
 200 `{ "status": "Password changed" }` — the other sessions are closed, the current one stays.
 Errors: 400 · 401 wrong old password
 
-### 🚧 DELETE /api/me
-Who: logged in — **crypto-shredding**: the user's key is destroyed, then the account and everything linked to it.
+### 🧪 DELETE /api/me
+Who: logged in — **crypto-shredding**: the user's key (DEK) is destroyed first, then the account and everything linked to it, in one transaction.
 Body: `{ "password": "..." }` — required, confirms the deletion (it cannot be undone).
-204, cookie cleared. Errors: 400 missing password · 401 wrong password
-⚠️ Company account: its ads, the applications on them and their messages are deleted too.
+204, cookie cleared. Errors: 400 `password: is required` · 401 `Invalid password`
+⚠️ Company account: its profile, its ads, the applications on them and their messages are deleted too.
 
 ### 🚧 GET /api/me/export
 Who: logged in — GDPR data export, everything decrypted.
 200: JSON file (`Content-Disposition: attachment`) with profile, company profile, ads, applications (with message, CV as a download link), messages, active sessions.
 
-### 🚧 GET /api/me/candidatures
+### ✅ GET /api/me/candidatures
 Who: `candidat`
 200: paginated list of my applications
 ```json
@@ -163,9 +170,23 @@ Who: `candidat`
 }
 ```
 
-### 🚧 GET /api/me/annonces
-Who: `entreprise`
-200: paginated list of my ads, **all statuses** (draft, expired...), each with `nb_candidatures`.
+### 🧪 GET /api/me/annonces
+Who: `entreprise` — paginated list of my ads, **all statuses** (draft, published, expired, filled), newest first.
+Item:
+```json
+{
+  "annonce_id": "uuid",
+  "reference": "26-10-SAN-04",
+  "titre": "...",
+  "statut": "brouillon",
+  "type_contrat": "CDI",
+  "ville": "...",
+  "date_publication": null,
+  "date_expiration": null,
+  "nb_candidatures": 3
+}
+```
+Errors: 401 · 403 not a company
 
 ---
 
@@ -186,27 +207,27 @@ Body:
   "nom_entreprise": "Only when role = entreprise"
 }
 ```
-Required: `email`, `password`, `role`, `username` (3–30 characters, unique), `nom`, `prenom`, + `nom_entreprise` for a company
+Required: `email`, `password`, `role`, `username` (3–30 characters, unique), `nom`, `prenom`, + `nom_entreprise` for a company. `telephone` is optional. `nom_entreprise` is ignored for a candidate.
 201: same shape as `GET /api/me`. The account is created already verified (no email verification). Not logged in yet → call `POST /api/login` next.
 Errors: 400 · 409 email or username taken
 
-### 🚧 GET /api/users
+### ✂️ GET /api/users
 Who: `admin` — paginated, decrypted. Filters: `?role=`
 
-### 🚧 GET /api/users/{id}
+### ✂️ GET /api/users/{id}
 Who: `admin` — same shape as `GET /api/me`.
 
-### 🚧 PATCH /api/users/{id}
+### ✂️ PATCH /api/users/{id}
 Who: `admin` — same body as `PATCH /api/me`, plus `role`.
 
-### 🚧 DELETE /api/users/{id}
-Who: `admin` — same crypto-shredding as `DELETE /api/me`. 204.
+### 🧪 DELETE /api/users/{id}
+Who: `admin` — same crypto-shredding as `DELETE /api/me`, no password asked. 204. Errors: 403 · 404
 
 ---
 
-## Companies (public profile, stored in clear)
+## Companies (profile stored in clear) — ✂️ not delivered
 
-### 🚧 GET /api/entreprises
+### ✂️ GET /api/entreprises
 Who: public — paginated.
 Item:
 ```json
@@ -221,13 +242,13 @@ Item:
 }
 ```
 
-### 🚧 GET /api/entreprises/{id}
+### ✂️ GET /api/entreprises/{id}
 Who: public — one company, same shape.
 
-### 🚧 GET /api/entreprises/{id}/annonces
+### ✂️ GET /api/entreprises/{id}/annonces
 Who: public — paginated, published ads of that company only.
 
-### 🚧 PATCH /api/entreprises/{id}
+### ✂️ PATCH /api/entreprises/{id}
 Who: the company itself, or `admin`
 Body (any subset): `nom_entreprise`, `siret`, `secteur`, `ville`, `site_web`, `description`
 200: the updated company. Errors: 400 · 403 · 409 SIRET taken
@@ -238,7 +259,7 @@ Body (any subset): `nom_entreprise`, `siret`, `secteur`, `ville`, `site_web`, `d
 ## Ads (annonces)
 
 ### ✅ GET /api/annonces
-Who: public — only `publiee` and not past `date_expiration`. Newest first.
+Who: logged in — only `publiee` and not past `date_expiration`, for every role (admin included). Newest first.
 Filters (all optional): `q` (text in title / description), `ville`, `type_contrat`, `category`, `teletravail`, `page`, `per_page`
 Item (short, for the board):
 ```json
@@ -255,9 +276,10 @@ Item (short, for the board):
 }
 ```
 `extrait` = the first 200 characters of `description`, built by the API. The full text comes with `GET /api/annonces/{id}`.
+Errors: 400 invalid filter · 401 not logged in
 
-### 🚧 GET /api/annonces/{id}
-Who: public (draft / expired: only the owner company and admin, others get 404)
+### ✅ GET /api/annonces/{id}
+Who: logged in. Published ads: everyone. Draft / expired / filled: only the owner company and admin, others get 404 (same answer as an unknown id, so drafts stay hidden).
 200 — full ad, for the "learn more" view (no page reload):
 ```json
 {
@@ -278,19 +300,22 @@ Who: public (draft / expired: only the owner company and admin, others get 404)
   "entreprise": { "user_id": "uuid", "nom_entreprise": "...", "ville": "...", "site_web": "..." }
 }
 ```
+Errors: 401 · 404
 
-### 🚧 POST /api/annonces
+### 🧪 POST /api/annonces
 Who: `entreprise` (own ad) or `admin` (must send `entreprise_id`)
 Body: `titre`, `description`, `type_contrat` required · `category`, `teletravail`, `salaire_min`, `salaire_max`, `niveau_experience`, `ville`, `date_expiration`, `statut` (`brouillon` or `publiee`, default `brouillon`) optional
-201: the full ad (`reference` generated by the server).
+201: the full ad. `reference` is generated by the server: `YY-MM-ABC-NN` (year, month, 3 letters of the company name, counter per company). `date_publication` is set when created as `publiee`.
+Errors: 400 invalid field · 400 `salaire_max: must be >= salaire_min` · 400 `entreprise_id: unknown company` (admin) · 401 · 403
 
-### 🚧 PATCH /api/annonces/{id}
-Who: owner company or `admin` — any subset of the POST fields.
-Publishing = `{"statut": "publiee"}` (sets `date_publication`). Closing = `{"statut": "pourvue"}`.
-200: the full ad. Errors: 400 · 403 · 404
+### 🧪 PATCH /api/annonces/{id}
+Who: owner company or `admin` — any subset of the POST fields, `statut` can be any of the 4 values.
+`titre`, `description`, `type_contrat`, `statut` cannot be `null`. The other fields accept `null` to clear them.
+Publishing = `{"statut": "publiee"}`: sets `date_publication` the first time only. Closing = `{"statut": "pourvue"}`.
+200: the full ad. Errors: 400 invalid field · 400 `No field to update` · 400 salary check (compared with the stored value for the side not sent) · 401 · 403 · 404 not found or not yours
 
-### 🚧 DELETE /api/annonces/{id}
-Who: owner company or `admin` — deletes the ad **and its applications and messages**. 204.
+### 🧪 DELETE /api/annonces/{id}
+Who: owner company or `admin` — deletes the ad **and its applications and messages**. 204. Errors: 401 · 403 · 404 not found or not yours
 
 ---
 
@@ -298,7 +323,7 @@ Who: owner company or `admin` — deletes the ad **and its applications and mess
 
 An account is required to apply. Not logged in → the front shows one form (account fields + message + CV), calls `POST /api/users`, `POST /api/login`, then this route.
 
-### 🚧 POST /api/annonces/{id}/candidatures
+### ✅ POST /api/annonces/{id}/candidatures
 Who: `candidat`
 `multipart/form-data`:
 | Field | Rule |
@@ -311,7 +336,7 @@ Who: `candidat`
 ```
 Errors: 400 · 404 ad not found or not published · 409 already applied · 413 file too large · 415 not a PDF
 
-### 🚧 GET /api/annonces/{id}/candidatures
+### ✅ GET /api/annonces/{id}/candidatures
 Who: owner company or `admin` — paginated, decrypted.
 Item:
 ```json
@@ -325,21 +350,21 @@ Item:
 }
 ```
 
-### 🚧 GET /api/candidatures
+### ✂️ GET /api/candidatures
 Who: `admin` — paginated, all applications. Filters: `?annonce_id=`, `?statut=`
 
-### 🚧 GET /api/candidatures/{id}
+### ✂️ GET /api/candidatures/{id}
 Who: the candidate, the owner company, or `admin` (others: 404) — same item shape.
 
-### 🚧 PATCH /api/candidatures/{id}
+### ✅ PATCH /api/candidatures/{id}
 Who: owner company or `admin`
 Body: `{ "statut": "entretien" }`
-200: the application. Errors: 400 · 404
+200: the application, same shape as an item of `GET /api/annonces/{id}/candidatures`. Errors: 400 · 401 · 403 candidate · 404 not found or not yours
 
-### 🚧 DELETE /api/candidatures/{id}
+### ✂️ DELETE /api/candidatures/{id}
 Who: the candidate (withdraw) or `admin` — deletes its messages too. 204.
 
-### 🚧 GET /api/candidatures/{id}/cv
+### ✅ GET /api/candidatures/{id}/cv
 Who: the candidate, the owner company, or `admin` (others: 404)
 200: the PDF (`Content-Type: application/pdf`, `Content-Disposition: attachment`). 404 if no CV.
 
@@ -347,31 +372,34 @@ Who: the candidate, the owner company, or `admin` (others: 404)
 
 ## Messages (one conversation per application)
 
-### 🚧 GET /api/conversations
-Who: logged in — my conversations (candidate: my applications · company: applications on my ads). Paginated, most recent activity first.
+### 🧪 GET /api/conversations
+Who: `candidat` or `entreprise` (admin: 403) — my conversations (candidate: my applications · company: applications on my ads). Paginated, most recent activity first.
 Item:
 ```json
 {
   "candidature_id": "uuid",
   "annonce": { "annonce_id": "uuid", "titre": "..." },
-  "interlocuteur": "Nom entreprise or Prénom Nom",
+  "interlocuteur": "Nom entreprise (seen by the candidate) or Prénom Nom (seen by the company)",
   "dernier_message": { "contenu": "...", "date_envoi": "...", "auteur_id": "uuid" },
   "non_lus": 2
 }
 ```
+`dernier_message` is `null` if the conversation has no message.
+⚠️ Front: the list is in `.items`, not the response itself.
 
-### 🚧 GET /api/candidatures/{id}/messages
-Who: the candidate or the owner company (others: 404) — paginated, oldest first. The first message is always the candidate's application message. Marks the other person's messages as read.
+### 🧪 GET /api/candidatures/{id}/messages
+Who: the candidate or the owner company only (admin and others: 404) — paginated, oldest first. The first message is always the candidate's application message. Marks the other person's messages as read; `lu` in the response is the state **before** this call.
 Item:
 ```json
 { "message_id": "uuid", "auteur_id": "uuid", "contenu": "...", "date_envoi": "...", "lu": true }
 ```
 Front: poll every few seconds (no websocket).
 
-### 🚧 POST /api/candidatures/{id}/messages
-Who: the candidate or the owner company
+### 🧪 POST /api/candidatures/{id}/messages
+Who: the candidate or the owner company only (others: 404)
 Body: `{ "contenu": "..." }` — 1–5000 characters
-201: the message.
+201: the message, same shape as an item of the GET above, with `lu: false`.
+Every message is encrypted with the **candidate's** key, whoever writes it: deleting the candidate's account shreds the whole conversation.
 
 ---
 
