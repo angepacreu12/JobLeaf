@@ -118,5 +118,42 @@ function find_annonce(PDO $pdo, string $id, bool $only_open = true): ?array {
     return $annonce;
 };
 
+function next_reference(PDO $pdo, string $entreprise_id): string {
+    $stmt = $pdo->prepare(
+        'SELECT nom_entreprise, 
+        (SELECT count(*) FROM annonce WHERE entreprise_id = :id1) AS n
+         FROM profil_entreprise WHERE user_id = :id2'
+    );
+    $stmt->bindValue(':id1',$id);
+    $stmt->bindValue(':id2',$id);
+    $row = $stmt->fetch();
+
+    $letters = preg_replace('/[^A-Z]/', '', strtoupper($row['nom_entreprise']));
+    $code = substr($letters . 'XXX', 0, 3);
+    return date('y-m') . '-' . $code . '-' . sprintf('%02d', $n + 1);
+}
+
+function create_annonce(PDO $pdo, array $a): string {
+    $publication = $a['statut'] === 'publiee' ? 'now()' : 'NULL';
+    $stmt = $pdo->prepare(
+        "INSERT INTO annonce (reference, titre, 
+         description, type_contrat, category, teletravail,
+         salaire_min, salaire_max, niveau_experience, ville, statut, date_publication,
+         date_expiration, entreprise_id, created_at, updated_at)
+         VALUES (:reference, :titre, :description, :type_contrat, :category, :teletravail,
+         :salaire_min, :salaire_max, :niveau_experience, :ville, :statut, $publication,
+         :date_expiration, :entreprise_id, now(), now())
+         RETURNING annonce_id
+         date_publication: now() when statut is 'publiee', otherwise NULL"
+    );
+    $columns = ['reference', 'titre', 'description', 'type_contrat', 'category', 'teletravail',
+            'salaire_min', 'salaire_max', 'niveau_experience', 'ville', 'statut',
+            'date_expiration', 'entreprise_id'];
+    foreach ($columns as $column) {
+        $stmt->bindValue(':' . $column, $a[$column]);
+    }
+    return $stmt->fetchColumn();
+}
+
 
     

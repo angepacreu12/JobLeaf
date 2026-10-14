@@ -117,4 +117,17 @@ function validate_password(array $array, string $field): ?string {
     }
     return $value;
 }
+
+function validate_date(array $array, string $field, bool $required): ?string {
+    $value = validate($array, $field, 10, 40, $required);
+    if($value === null){
+           return null;
+    }
+    try {
+        $date = new DateTimeImmutable($value);
+    } catch (Exception $e) {
+        json_response(400, ['error' => "$field: invalid date"]);
+    }
+    return $date->format(DATE_ATOM);
+}
  
