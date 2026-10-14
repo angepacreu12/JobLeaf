@@ -35,10 +35,10 @@ Legend: ✅ done · 🧪 written, not tested yet · 🚧 to do · ⚠️ blockin
 | Route | State | Notes |
 |---|---|---|
 | `PATCH /api/candidatures/{id}` | ✅ tested | status change, owner company / admin |
-| `POST /api/annonces` | 🧪 | company (or admin + `entreprise_id`), `reference` = `YY-MM-ABC-NN` with `MAX` per company |
-| `PATCH /api/annonces/{id}` | 🧪 | owner / admin, `array_key_exists`, column whitelist, `date_publication` set on first publish |
-| `DELETE /api/annonces/{id}` | 🧪 | owner / admin, cascades applications + messages, `empty_response(204)` |
-| `GET /api/me/annonces` | 🧪 | company's own ads, all statuses, `nb_candidatures` |
+| `POST /api/annonces` | ✅ tested | company (or admin + `entreprise_id`), `reference` = `YY-MM-ABC-NN` with `MAX` per company |
+| `PATCH /api/annonces/{id}` | ✅ tested | owner / admin, `array_key_exists`, column whitelist, `date_publication` set on first publish |
+| `DELETE /api/annonces/{id}` | ✅ tested | owner / admin, cascades applications + messages, `empty_response(204)` |
+| `GET /api/me/annonces` | ✅ tested | company's own ads, all statuses, `nb_candidatures` |
 
 Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`format_date()`). `API.md` documents the current format meanwhile.
 
@@ -50,18 +50,18 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 
 | Route | State | Notes |
 |---|---|---|
-| `DELETE /api/me` | 🧪 | **crypto-shredding**, password required, `delete_account()`: DEK first, then the user, one transaction |
-| `DELETE /api/users/{id}` | 🧪 | admin, same `delete_account()` |
-| `GET /api/conversations` | 🧪 | ⚠️ `page_employe.js` must read `.items`, `interlocuteur`, `dernier_message.contenu` / `.date_envoi` |
-| `GET /api/candidatures/{id}/messages` | 🧪 | participants only (admin 404), oldest first, marks as read |
-| `POST /api/candidatures/{id}/messages` | 🧪 | 1–5000, always encrypted with the **candidate's** DEK |
+| `DELETE /api/me` | ✅ tested | **crypto-shredding**, password required, `delete_account()`: DEK first, then the user, one transaction |
+| `DELETE /api/users/{id}` | ✅ tested | admin, same `delete_account()` |
+| `GET /api/conversations` | ✅ tested | ⚠️ `page_employe.js` must read `.items`, `interlocuteur`, `dernier_message.contenu` / `.date_envoi` |
+| `GET /api/candidatures/{id}/messages` | ✅ tested | participants only (admin 404), oldest first, marks as read |
+| `POST /api/candidatures/{id}/messages` | ✅ tested | 1–5000, always encrypted with the **candidate's** DEK |
 
 **Then**
 
 | Route | State | Notes |
 |---|---|---|
-| `GET /api/me/export` | 🚧 | GDPR export, everything decrypted (good for the defence) |
-| `PUT /api/me/password` | 🚧 | check old one, rehash, close the other sessions |
+| `GET /api/me/export` | ✅ tested | GDPR export, everything decrypted (good for the defence) |
+| `PUT /api/me/password` | ✅ tested | check old one, rehash, close the other sessions |
 | `PATCH /api/me` | 🚧 | re-encrypt changed fields, new `email_index` if the email changes, `null` = clear |
 | `GET /api/users`, `GET /api/users/{id}`, `PATCH /api/users/{id}` | 🚧 | admin, paginated, decrypted |
 | `GET /api/candidatures`, `GET /api/candidatures/{id}`, `DELETE /api/candidatures/{id}` | 🚧 | admin / participants / withdraw |
@@ -71,7 +71,7 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 
 ## D5 — Thursday 15 October 🚧 — test + deliver
 
-**Debug session 1 — first thing in the morning**
+**Debug session 1 — first thing in the morning** ✅ done on D4 (14 Oct): 22 routes, 101/101 checks, shredding demo OK
 - `php -l` on every file, then the D3 ad routes (create draft / published as company and as admin, read, list, edit, publish, delete, other company refused everywhere)
 - `DELETE /api/me` + `DELETE /api/users/{id}`: shredding demo
 - Switch every passing 🧪 to ✅ in `API.md` and here
