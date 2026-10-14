@@ -1,7 +1,7 @@
 # Jobleaf API
 
 Contract between the back end (PHP) and the front end.
-Legend: ✅ done · 🧪 written, not tested yet · 🚧 to do · ❓ to decide · ✂️ cut (not delivered)
+Legend: ✅ done · 🧪 written, not tested yet · 🚧 to do · ❓ to decide
 
 ---
 
@@ -211,13 +211,13 @@ Required: `email`, `password`, `role`, `username` (3–30 characters, unique), `
 201: same shape as `GET /api/me`. The account is created already verified (no email verification). Not logged in yet → call `POST /api/login` next.
 Errors: 400 · 409 email or username taken
 
-### ✂️ GET /api/users
+### 🚧 GET /api/users
 Who: `admin` — paginated, decrypted. Filters: `?role=`
 
-### ✂️ GET /api/users/{id}
+### 🚧 GET /api/users/{id}
 Who: `admin` — same shape as `GET /api/me`.
 
-### ✂️ PATCH /api/users/{id}
+### 🚧 PATCH /api/users/{id}
 Who: `admin` — same body as `PATCH /api/me`, plus `role`.
 
 ### 🧪 DELETE /api/users/{id}
@@ -225,9 +225,9 @@ Who: `admin` — same crypto-shredding as `DELETE /api/me`, no password asked. 2
 
 ---
 
-## Companies (profile stored in clear) — ✂️ not delivered
+## Companies (public profile, stored in clear)
 
-### ✂️ GET /api/entreprises
+### 🚧 GET /api/entreprises
 Who: public — paginated.
 Item:
 ```json
@@ -242,13 +242,13 @@ Item:
 }
 ```
 
-### ✂️ GET /api/entreprises/{id}
+### 🚧 GET /api/entreprises/{id}
 Who: public — one company, same shape.
 
-### ✂️ GET /api/entreprises/{id}/annonces
+### 🚧 GET /api/entreprises/{id}/annonces
 Who: public — paginated, published ads of that company only.
 
-### ✂️ PATCH /api/entreprises/{id}
+### 🚧 PATCH /api/entreprises/{id}
 Who: the company itself, or `admin`
 Body (any subset): `nom_entreprise`, `siret`, `secteur`, `ville`, `site_web`, `description`
 200: the updated company. Errors: 400 · 403 · 409 SIRET taken
@@ -350,10 +350,10 @@ Item:
 }
 ```
 
-### ✂️ GET /api/candidatures
+### 🚧 GET /api/candidatures
 Who: `admin` — paginated, all applications. Filters: `?annonce_id=`, `?statut=`
 
-### ✂️ GET /api/candidatures/{id}
+### 🚧 GET /api/candidatures/{id}
 Who: the candidate, the owner company, or `admin` (others: 404) — same item shape.
 
 ### ✅ PATCH /api/candidatures/{id}
@@ -361,7 +361,7 @@ Who: owner company or `admin`
 Body: `{ "statut": "entretien" }`
 200: the application, same shape as an item of `GET /api/annonces/{id}/candidatures`. Errors: 400 · 401 · 403 candidate · 404 not found or not yours
 
-### ✂️ DELETE /api/candidatures/{id}
+### 🚧 DELETE /api/candidatures/{id}
 Who: the candidate (withdraw) or `admin` — deletes its messages too. 204.
 
 ### ✅ GET /api/candidatures/{id}/cv

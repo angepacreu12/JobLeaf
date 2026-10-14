@@ -1,8 +1,8 @@
 # Jobleaf backend — 5-day plan
 
-Deadline: **Thursday 15 October 2026**.
+Target: **Thursday 15 October 2026** (personal goal) · Real deadline: **Sunday 18 October 2026** (buffer: debug, README, demo).
 Workflow: code on `dev-php` → test on the local Docker stack → merge everything into `master` at the end.
-Legend: ✅ done · 🧪 written, not tested yet · 🚧 to do · ✂️ cut (not delivered) · ⚠️ blocking for the front
+Legend: ✅ done · 🧪 written, not tested yet · 🚧 to do · ⚠️ blocking for the front
 
 ---
 
@@ -44,7 +44,7 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 
 **Done when:** a company publishes an ad, a candidate applies with a PDF, the company sees the application decrypted and downloads the CV.
 
-## D4 — Wednesday 14 October — crypto-shredding + messages (scope cut)
+## D4 — Wednesday 14 October 🚧 — crypto-shredding, messages, account, admin
 
 **Must do**
 
@@ -56,20 +56,18 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 | `GET /api/candidatures/{id}/messages` | 🧪 | participants only (admin 404), oldest first, marks as read |
 | `POST /api/candidatures/{id}/messages` | 🧪 | 1–5000, always encrypted with the **candidate's** DEK |
 
-**If time allows**
+**Then**
 
 | Route | State | Notes |
 |---|---|---|
 | `GET /api/me/export` | 🚧 | GDPR export, everything decrypted (good for the defence) |
 | `PUT /api/me/password` | 🚧 | check old one, rehash, close the other sessions |
+| `PATCH /api/me` | 🚧 | re-encrypt changed fields, new `email_index` if the email changes, `null` = clear |
+| `GET /api/users`, `GET /api/users/{id}`, `PATCH /api/users/{id}` | 🚧 | admin, paginated, decrypted |
+| `GET /api/candidatures`, `GET /api/candidatures/{id}`, `DELETE /api/candidatures/{id}` | 🚧 | admin / participants / withdraw |
+| `GET /api/entreprises`, `GET /api/entreprises/{id}`, `GET /api/entreprises/{id}/annonces`, `PATCH /api/entreprises/{id}` | 🚧 | company profiles + owner / admin edit (ads list: logged in, like the other ad routes) |
 
-**Cut ✂️** (marked in `API.md`, listed in the README as not delivered)
-- `PATCH /api/me`
-- `GET /api/users`, `GET /api/users/{id}`, `PATCH /api/users/{id}`
-- `GET /api/candidatures`, `GET /api/candidatures/{id}`, `DELETE /api/candidatures/{id}`
-- `GET /api/entreprises`, `GET /api/entreprises/{id}`, `GET /api/entreprises/{id}/annonces`, `PATCH /api/entreprises/{id}`
-
-**Done when:** a deleted account cannot be decrypted anymore (shredding demo: the `DEK` row and the user's rows are gone).
+**Done when:** a deleted account cannot be decrypted anymore (shredding demo: the `DEK` row and the user's rows are gone), and the admin page can list / edit / delete every resource.
 
 ## D5 — Thursday 15 October 🚧 — test + deliver
 
@@ -78,14 +76,18 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 - `DELETE /api/me` + `DELETE /api/users/{id}`: shredding demo
 - Switch every passing 🧪 to ✅ in `API.md` and here
 
+**Late morning — last features**
+- `POST /api/password-resets` + `POST /api/password-resets/confirmation` (Mailpit container, one-time token, hash stored, closes all sessions)
+- Cleanup script: purge expired sessions / used tokens, move past-due ads to `expiree`
+
 **Debug session 2 — start of the afternoon**
 - Messages: conversations, read, send, unread counter, participants only
 - Front integration with Asleya on the merged branch, fix what breaks
 
 **Afternoon — feature freeze, no new routes**
 - Smoke test script: every route, every status code (200 / 201 / 204 / 400 / 401 / 403 / 404 / 409 / 413 / 415)
-- `README.md`: install, config (`.env.example`), run, DB schema, API routes (link `docs/API.md`), pages, crypto-shredding + backup strategy (a backup still holds the wrapped DEK: limit `DEK` backup retention or rotate the master key), deliberate choices (account required to see ads and apply, lockout rule, `session` / `token` / `DEK` not exposed), routes not delivered
+- `README.md`: install, config (`.env.example`), run, DB schema, API routes (link `docs/API.md`), pages, crypto-shredding + backup strategy (a backup still holds the wrapped DEK: limit `DEK` backup retention or rotate the master key), deliberate choices (account required to see ads and apply, lockout rule, `session` / `token` / `DEK` not exposed)
 - Git: `git rm --cached` on `docker/.env`, `inject_report.json`, `.~lock` file, `.pyc` · rotate keys · remove or document `lettre_chiffree` · merge into `master`
 - Final check: `docker compose down -v && docker compose up -d` on a fresh clone, then the demo
 
-**Cut ✂️:** password reset (2 routes + Mailpit) and the cleanup script (expired ads are already hidden by the queries; expired sessions are refused by `find_valid_session()`).
+**If late, slips to the buffer (Friday 16 – Sunday 18):** password reset → cleanup script (can be a SQL script run by hand). D4 crypto-shredding is protected.
