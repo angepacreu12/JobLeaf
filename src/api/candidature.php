@@ -145,3 +145,42 @@ function handle_update_candidature(string $candidature_id): never {
     $row = find_candidature_row(db(), $candidature_id);
     json_response(200, decrypt_candidatures(db(), [$row])[0]);
 }
+
+function handle_list_candidatures(): never {
+    require_role('admin');
+    $filter = [
+        'annonce_id' => validate_uuid($_GET, 'annonce_id', false),
+        'statut'     => validate_enum($_GET, 'statut', STATUTS_CANDIDATURE, false),
+    ];
+    $pagination = get_pagination();
+    $result = list_all_candidatures(db(), $filter, $pagination);
+    paginated_response(decrypt_candidatures(db(), $result['rows']), $result['total'], $pagination);
+}
+
+function handle_get_candidature(string $candidature_id): never {
+    $user = current_user();
+    $row = find_candidature_row(db(), $candidature_id);
+    if ($row === null) {
+        json_response(404, ['error' => 'Not found']);
+    }
+    $is_candidate = $user['user_id'] === $row['candidat_id'];
+    $is_owner     = $user['user_id'] === $row['entreprise_id'];
+    $is_admin     = $user['role'] === 'admin';
+    if (!$is_candidate && !$is_owner && !$is_admin) {
+        json_response(404, ['error' => 'Not found']);
+    }
+    json_response(200, decrypt_candidatures(db(), [$row])[0]);
+}
+
+function handle_delete_candidature(string $candidature_id): never {
+    $user = require_role('candidat', 'admin');
+    $row = find_candidature_row(db(), $candidature_id);
+    if ($row === null) {
+        json_response(404, ['error' => 'Not found']);
+    }
+    if ($user['role'] !== 'admin' && $row['candidat_id'] !== $user['user_id']) {
+        json_response(404, ['error' => 'Not found']);
+    }
+    delete_candidature(db(), $candidature_id);
+    empty_response(204);
+}
