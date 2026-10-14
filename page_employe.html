@@ -105,9 +105,9 @@
 
             <div class="flex-1 flex flex-col items-center pl-1 pt-5">
 
-                <form class="flex border rounded-[50px] px-2 py-1 bg-white max-w-[250px] focus-within:border-vert-jobleaf focus-within:ring-2 focus-within:ring-vert-clair">
+                <form id="form-search" class="flex border rounded-[50px] px-2 py-1 bg-white max-w-[250px] focus-within:border-vert-jobleaf focus-within:ring-2 focus-within:ring-vert-clair">
 
-                    <input type="search" placeholder="Rechercher une annonce" class="outline-none">
+                    <input type="search" name="q" placeholder="Rechercher une annonce" class="outline-none">
                     <button aria-label="Rechercher">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -119,26 +119,24 @@
                 
                 <!-- Cadre annonce -->
                 
-                <section id="cadre-annonce" class="mt-6 bg-white w-65 h-30 rounded-lg">
-                    
-                    <!-- Cadre annonce replié -->
+                <section id="liste-annonces" class="mt-6 flex flex-col gap-4 w-65"></section>
 
-                    <div class="flex-1 flex flex-col items-left pb-9">
+                    <p id="message-annonces" class="mt-6 text-vert-fonce"></p>
 
-                        <a href="#" class="flex gap-3">
-                            <img src="image/avatar-defaut.png" alt="" class="h-13 w-13 shrink-0 rounded-full object-cover">
-                            <span class="min-w-0 flex-1">
-                                <span data-champ="titre" class=" block truncate font-bold text-vert-fonce text-base"></span>
-                                <span data-champ="entreprise" class=" block truncate font-semibold text-vert-fonce text-sm"></span>
-                                <span data-champ="ville" class="block truncate text-sm text-vert-fonce"></span>
-                                <span data-champ="type_contrat" class="block truncate text-sm text-vert-fonce"></span>
-                                <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
-                            </span>
-                        </a>
-
-                    </div>
-                    
-                </section>
+                    <template id="modele-annonce">
+                        <article class="bg-white rounded-lg p-3">
+                            <a href="#" data-champ="lien" class="flex gap-3">
+                                <img src="image/avatar-defaut.png" alt="" class="h-13 w-13 shrink-0 rounded-full object-cover">
+                                <span class="min-w-0 flex-1">
+                                    <span data-champ="titre"        class="block truncate font-bold text-vert-fonce text-base"></span>
+                                    <span data-champ="entreprise"   class="block truncate font-semibold text-vert-fonce text-sm"></span>
+                                    <span data-champ="ville"        class="block truncate text-sm text-vert-fonce"></span>
+                                    <span data-champ="type_contrat" class="block truncate text-sm text-vert-fonce"></span>
+                                    <span data-champ="date"         class="block text-xs text-gray-500"></span>
+                                </span>
+                            </a>
+                        </article>
+                    </template>
 
             </div>
                 
