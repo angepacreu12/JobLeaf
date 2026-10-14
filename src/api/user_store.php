@@ -85,3 +85,17 @@ function create_user(PDO $pdo, array $user): string {
 
     return $stmt->fetchColumn();
 }
+
+function find_password_hash(PDO $pdo, string $user_id): ?string {
+    $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE user_id = :id');
+    $stmt->bindValue(':id', $user_id);
+    $stmt->execute();
+    $hash = $stmt->fetchColumn();
+    return $hash === false ? null : $hash;
+}
+
+function delete_user(PDO $pdo, string $user_id): void {
+    $stmt = $pdo->prepare('DELETE FROM users WHERE user_id = :id');
+    $stmt->bindValue(':id', $user_id);
+    $stmt->execute();
+}

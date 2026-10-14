@@ -36,3 +36,44 @@ function register(PDO $pdo, array $data): array {
     }
     return ['status' => 201, 'user' => ['user_id' => $user_id, 'role' => $data['role'], 'username' => $data['username'], 'email' =>$data['email'], 'nom' => $data['nom'], 'prenom' => $data['prenom'], 'telephone' => $data['telephone']]];
 }
+
+function delete_account(PDO $pdo, string $user_id): void {
+    $pdo->beginTransaction();
+    try {
+        delete_dek($pdo, $user_id);
+        delete_user($pdo, $user_id);
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+function handle_delete_me(): never {
+    $user = current_user();
+    $body = read_json_body();
+    if ($body === null) {
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $password = get_string($body, 'password');
+    if ($password === null || $password === '') {
+        json_response(400, ['error' => 'password: is required']);
+    }
+    $hash = find_password_hash(db(), $user['user_id']);
+    if ($hash === null || check_password($password, $hash) === false) {
+        json_response(401, ['error' => 'Invalid password']);
+    }
+    delete_account(db(), $user['user_id']);
+    clear_session_cookie();
+    empty_response(204);
+}
+
+function handle_delete_user(string $user_id): never {
+    require_role('admin');
+    if (find_user_by_id(db(), $user_id) === null) {
+        json_response(404, ['error' => 'Not found']);
+    }
+    delete_account(db(), $user_id);
+    empty_response(204);
+}
+
