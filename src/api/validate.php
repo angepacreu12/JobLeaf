@@ -130,4 +130,27 @@ function validate_date(array $array, string $field, bool $required): ?string {
     }
     return $date->format(DATE_ATOM);
 }
+
+function validate_siret(array $array, string $field, bool $required): ?string {
+    $value = validate($array, $field, 14, 20, $required);
+    if ($value === null) {
+        return null;
+    }
+    $value = str_replace(' ', '', $value);
+    if (preg_match('/^[0-9]{14}$/', $value) !== 1) {
+        json_response(400, ['error' => "$field: must be 14 digits"]);
+    }
+    return $value;
+}
+
+function validate_url(array $array, string $field, bool $required): ?string {
+    $value = validate($array, $field, 8, 255, $required);
+    if ($value === null) {
+        return null;
+    }
+    if (filter_var($value, FILTER_VALIDATE_URL) === false || preg_match('#^https?://#i', $value) !== 1) {
+        json_response(400, ['error' => "$field: must be an http(s) URL"]);
+    }
+    return $value;
+}
  

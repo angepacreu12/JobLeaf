@@ -10,17 +10,19 @@ require_once dirname(__DIR__, 2) . '/src/api/annonce.php';
 require_once dirname(__DIR__, 2) . '/src/api/candidature.php';
 require_once dirname(__DIR__, 2) . '/src/api/message.php';
 require_once dirname(__DIR__, 2) . '/src/api/export.php';
+require_once dirname(__DIR__, 2) . '/src/api/entreprise.php';
+
 
 $routes = [
     '#^/api/login$#'  => ['POST' => 'handle_login'],
     '#^/api/logout$#' => ['POST' => 'handle_logout'],
-    '#^/api/me$#'     => ['GET'  => 'handle_me', 'DELETE' => 'handle_delete_me'],
+    '#^/api/me$#' => ['GET' => 'handle_me', 'PATCH' => 'handle_update_me', 'DELETE' => 'handle_delete_me'],
+    '#^/api/users$#' => ['GET' => 'handle_list_users', 'POST' => 'handle_register'],
+    '#^/api/users/(' . UUID_RE . ')$#' => ['GET' => 'handle_get_user', 'PATCH' => 'handle_update_user', 'DELETE' => 'handle_delete_user'],
     '#^/api/me/password$#' => ['PUT' => 'handle_change_password'],
     '#^/api/me/export$#' => ['GET' => 'handle_export'],
     '#^/api/me/annonces$#' => ['GET' => 'handle_my_annonces'],
     '#^/api/me/candidatures$#' => ['GET' => 'handle_my_candidatures'],
-    '#^/api/users/(' . UUID_RE . ')$#' => ['DELETE' => 'handle_delete_user'],
-    '#^/api/users$#' => ['POST' => 'handle_register'],
     '#^/api/annonces$#'  => ['GET' => 'handle_list_annonces', 'POST' => 'handle_create_annonce'],
     '#^/api/annonces/(' . UUID_RE . ')$#'  => ['GET' => 'handle_get_annonce' ,'PATCH' => 'handle_update_annonce', 'DELETE' => 'handle_delete_annonce'],
     '#^/api/annonces/(' . UUID_RE . ')/candidatures$#' => ['POST' => 'handle_apply', 'GET' => 'handle_annonce_candidatures'],
@@ -29,6 +31,9 @@ $routes = [
     '#^/api/candidatures/(' . UUID_RE . ')$#' => ['GET' => 'handle_get_candidature', 'PATCH' => 'handle_update_candidature', 'DELETE' => 'handle_delete_candidature'],
     '#^/api/conversations$#' => ['GET' => 'handle_list_conversations'],
     '#^/api/candidatures/(' . UUID_RE . ')/messages$#' => ['GET' => 'handle_list_messages', 'POST' => 'handle_send_message'],
+    '#^/api/entreprises$#' => ['GET' => 'handle_list_entreprises'],
+    '#^/api/entreprises/(' . UUID_RE . ')$#' => ['GET' => 'handle_get_entreprise', 'PATCH' => 'handle_update_entreprise'],
+    '#^/api/entreprises/(' . UUID_RE . ')/annonces$#' => ['GET' => 'handle_entreprise_annonces'],
 ];
 
 try {

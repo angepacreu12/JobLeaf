@@ -27,6 +27,10 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
         $where[] = 'a.category = :category';   
         $params['category'] = $filter['category'];
     }
+    if (($filter['entreprise_id'] ?? null) !== null) {
+    $where[] = 'a.entreprise_id = :entreprise_id';
+    $params['entreprise_id'] = $filter['entreprise_id'];
+    }
     $where_sql = implode(' AND ', $where);
     
     $sql_count = "SELECT count(*) FROM annonce a WHERE $where_sql";
