@@ -5,7 +5,6 @@ require_once dirname(__DIR__, 2) . '/src/api/validate.php';
 
 const MAX_JSON_BODY = 65536;
 const SESSION_COOKIE = 'session';
-const MAX_JSON_BODY = 10000;
 const MAX_USER_AGENT = 500;
 
 function json_response(int $status, array $body): never{
