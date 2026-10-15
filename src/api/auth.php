@@ -141,10 +141,17 @@ function handle_register(): never{
     $data['prenom']    = validate($body, 'prenom', 1, 100, true);
     $data['telephone'] = validate_phone($body, 'telephone', false);
     $data['username']  = validate($body, 'username', 3, 30, true);
-    if ($data['role'] === 'entreprise'){
-        $data['nom_entreprise'] = validate($body, 'nom_entreprise', 1, 200, true);
+       if ($data['role'] === 'entreprise') {
+        $data['entreprise'] = [
+            'nom_entreprise' => validate($body, 'nom_entreprise', 1, 200, true),
+            'siret'          => validate_siret($body, 'siret', false),
+            'secteur'        => validate($body, 'secteur', 1, 100, false),
+            'ville'          => validate($body, 'ville', 1, 100, false),
+            'site_web'       => validate_url($body, 'site_web', false),
+            'description'    => validate($body, 'description', 1, 5000, false),
+        ];
     } else {
-        $data['nom_entreprise'] = null;
+        $data['entreprise'] = null;
     }
     $result = register(db(), $data);
     if ($result['status'] === 201) {

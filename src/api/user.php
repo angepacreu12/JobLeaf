@@ -21,7 +21,7 @@ function register(PDO $pdo, array $data): array {
         $user_id = create_user($pdo, $user);
         create_dek($pdo, $user_id, wrap_dek($dek));
         if ($data['role'] === 'entreprise'){
-            create_profil_entreprise($pdo, $user_id, $data['nom_entreprise']);
+            create_profil_entreprise($pdo, $user_id, $data['entreprise']);
         }
         $pdo->commit();
     } catch (Throwable $e) {
@@ -29,6 +29,9 @@ function register(PDO $pdo, array $data): array {
         if ( $e instanceof PDOException && $e->getCode() === '23505'){
             if (str_contains($e->getMessage(), 'users_username_key')){
                 return ['status' => 409, 'error' => 'Username already taken'];
+            }
+            if (str_contains($e->getMessage(), 'profil_entreprise_siret_key')){
+                return ['status' => 409, 'error' => 'siret: already taken'];
             }
             return ['status' => 409, 'error' => 'Email already taken'];
         }

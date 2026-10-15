@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-function create_profil_entreprise(PDO $pdo, string $user_id, string $nom_entreprise): void {
+function create_profil_entreprise(PDO $pdo, string $user_id, array $profil): void {
     $stmt = $pdo->prepare(
-        "INSERT INTO profil_entreprise ( user_id, nom_entreprise)
-         VALUES ( :user_id, :nom_entreprise)
-         "
+        'INSERT INTO profil_entreprise (user_id, nom_entreprise, siret, secteur, ville, site_web, description)
+         VALUES (:user_id, :nom_entreprise, :siret, :secteur, :ville, :site_web, :description)'
     );
-
     $stmt->bindValue(':user_id', $user_id);
-    $stmt->bindValue(':nom_entreprise', $nom_entreprise);
+    foreach (['nom_entreprise', 'siret', 'secteur', 'ville', 'site_web', 'description'] as $column) {
+        $stmt->bindValue(':' . $column, $profil[$column]);
+    }
     $stmt->execute();
 }
 
