@@ -62,10 +62,10 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 |---|---|---|
 | `GET /api/me/export` | ✅ tested | GDPR export, everything decrypted (good for the defence) |
 | `PUT /api/me/password` | ✅ tested | check old one, rehash, close the other sessions |
-| `PATCH /api/me` | 🚧 | re-encrypt changed fields, new `email_index` if the email changes, `null` = clear |
-| `GET /api/users`, `GET /api/users/{id}`, `PATCH /api/users/{id}` | 🚧 | admin, paginated, decrypted |
-| `GET /api/candidatures`, `GET /api/candidatures/{id}`, `DELETE /api/candidatures/{id}` | 🚧 | admin / participants / withdraw |
-| `GET /api/entreprises`, `GET /api/entreprises/{id}`, `GET /api/entreprises/{id}/annonces`, `PATCH /api/entreprises/{id}` | 🚧 | company profiles + owner / admin edit (ads list: logged in, like the other ad routes) |
+| `PATCH /api/me` | ✅ tested | re-encrypt changed fields, new `email_index` if the email changes, `null` = clear |
+| `GET /api/users`, `GET /api/users/{id}`, `PATCH /api/users/{id}` | ✅ tested | admin, paginated, decrypted |
+| `GET /api/candidatures`, `GET /api/candidatures/{id}`, `DELETE /api/candidatures/{id}` | ✅ tested | admin / participants / withdraw |
+| `GET /api/entreprises`, `GET /api/entreprises/{id}`, `GET /api/entreprises/{id}/annonces`, `PATCH /api/entreprises/{id}` | ✅ tested | company profiles + owner / admin edit (ads list: logged in, like the other ad routes) |
 
 **Done when:** a deleted account cannot be decrypted anymore (shredding demo: the `DEK` row and the user's rows are gone), and the admin page can list / edit / delete every resource.
 
@@ -80,7 +80,7 @@ Small leftovers from D2: salaries as `int` (when not null), dates in ISO 8601 (`
 - `POST /api/password-resets` + `POST /api/password-resets/confirmation` (Mailpit container, one-time token, hash stored, closes all sessions)
 - Cleanup script: purge expired sessions / used tokens, move past-due ads to `expiree`
 
-**Debug session 2 — start of the afternoon**
+**Debug session 2 — start of the afternoon** ✅ done on D4 (14 Oct) for blocks D–F: 11 routes, 98/98 checks
 - Messages: conversations, read, send, unread counter, participants only
 - Front integration with Asleya on the merged branch, fix what breaks
 
