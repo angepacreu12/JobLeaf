@@ -6,12 +6,13 @@ require_once dirname(__DIR__, 2) . '/src/api/validate.php';
 const MAX_JSON_BODY = 65536;
 const SESSION_COOKIE = 'session';
 const MAX_USER_AGENT = 500;
+const DATE_KEYS = ['date_publication', 'date_expiration', 'date_candidature', 'date_envoi', 'created_at', 'updated_at', 'expires_at'];
 
 function json_response(int $status, array $body): never{
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     header('X-Content-Type-Options: nosniff');
-    echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    echo json_encode(iso_dates($body), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     exit;
 }
 
@@ -83,4 +84,17 @@ function file_response(string $content, string $mime, string $filename): never {
 function empty_response(int $status): never {
     http_response_code($status);
     exit;
+}
+
+
+
+function iso_dates(array $data): array {
+    foreach ($data as $key => $value) {
+        if (is_array($value)) {
+            $data[$key] = iso_dates($value);
+        } elseif (is_string($value) && in_array($key, DATE_KEYS, true)) {
+            $data[$key] = (new DateTimeImmutable($value))->format(DATE_ATOM);
+        }
+    }
+    return $data;
 }

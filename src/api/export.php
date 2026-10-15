@@ -41,6 +41,6 @@ function handle_export(): never {
 
     $export['sessions'] = export_sessions($pdo, $id);
 
-    $json = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    $json = json_encode(iso_dates($export), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
     file_response($json, 'application/json', 'export.json');
 }
