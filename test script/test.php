@@ -162,15 +162,14 @@ for ($i = 0; $i < 3; $i++) {
     login($pdo, ADMIN_EMAIL, 'wrong-password', 'test-script');
 }
 $locked = login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script');
-check('locked after 5 failures -> 429, even with right password', $locked['status'] === 429,
-      (string) $locked['status']);
+check('locked after 5 failures -> 429, even with right password', $locked['status'] === 429, (string) $locked['status']);
 
 reset_failed_logins($pdo, $uid);
-check('after reset, right password -> 200 again',
-      login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script')['status'] === 200);
+check('after reset, right password -> 200 again', login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script')['status'] === 200);
 
 // --- unverified account
 var_dump(find_user_by_email_index($pdo, get_hmask_index_mail(UNVERIFIED_EMAIL))['email_verifie'] ?? 'KEY MISSING');
+
 // --- unverified account: temporarily un-verify the admin
 $pdo->prepare('UPDATE users SET email_verifie = false WHERE user_id = :id')->execute([':id' => $uid]);
 $unv = login($pdo, ADMIN_EMAIL, ADMIN_PASSWORD, 'test-script');
