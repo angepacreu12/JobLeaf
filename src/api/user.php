@@ -215,7 +215,7 @@ function handle_change_password(): never {
     if ($old === null || $old === '') {
         json_response(400, ['error' => 'old_password: is required']);
     }
-    $new = validate_password($body, 'new_password', true);
+    $new = validate_password($body, 'new_password');
 
     $hash = find_password_hash(db(), $user['user_id']);
     if ($hash === null || check_password($old, $hash) === false) {

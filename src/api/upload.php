@@ -4,7 +4,7 @@
 const MAX_CV_SIZE = 2 * 1024 * 1024;   // 2 MiB
 const MAX_UPLOAD_REQUEST = 3 * 1024 * 1024;
 function read_cv_upload(string $field): string {
-    // 1. request too big for PHP -> 413
+
     if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > MAX_UPLOAD_REQUEST){
         json_response(413, ['error' => "Payload Too Large"]);
     }
