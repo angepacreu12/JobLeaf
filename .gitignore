@@ -1,0 +1,9 @@
+.claude
+.venv
+seed
+test\ script/
+vendor
+.env
+.env.exemple
+.placeholder
+cookies.txt
