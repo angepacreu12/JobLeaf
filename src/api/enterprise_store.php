@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 function create_profil_entreprise(PDO $pdo, string $user_id, array $profil): void {
     $stmt = $pdo->prepare(
-        'INSERT INTO profil_entreprise (user_id, nom_entreprise, siret, secteur, ville, site_web, description)
-         VALUES (:user_id, :nom_entreprise, :siret, :secteur, :ville, :site_web, :description)'
+        'INSERT INTO profil_entreprise (user_id, nom_entreprise, siret, secteur, siege, site, description)
+         VALUES (:user_id, :nom_entreprise, :siret, :secteur, :siege, :site, :description)'
     );
     $stmt->bindValue(':user_id', $user_id);
-    foreach (['nom_entreprise', 'siret', 'secteur', 'ville', 'site_web', 'description'] as $column) {
+    foreach (['nom_entreprise', 'siret', 'secteur', 'siege', 'site', 'description'] as $column) {
         $stmt->bindValue(':' . $column, $profil[$column]);
     }
     $stmt->execute();
@@ -16,7 +16,7 @@ function create_profil_entreprise(PDO $pdo, string $user_id, array $profil): voi
 
 function find_profil_entreprise(PDO $pdo, string $user_id): ?array {
     $stmt = $pdo->prepare(
-        'SELECT user_id, nom_entreprise, siret, secteur, ville, site_web, description
+        'SELECT user_id, nom_entreprise, siret, secteur, siege, site_web, description
          FROM profil_entreprise WHERE user_id = :id'
     );
     $stmt->bindValue(':id', $user_id);
@@ -28,7 +28,7 @@ function find_profil_entreprise(PDO $pdo, string $user_id): ?array {
 function list_entreprises(PDO $pdo, array $pagination): array {
     $total = (int) $pdo->query('SELECT count(*) FROM profil_entreprise')->fetchColumn();
     $stmt = $pdo->prepare(
-        'SELECT user_id, nom_entreprise, siret, secteur, ville, site_web, description
+        'SELECT user_id, nom_entreprise, siret, secteur, siege, site_web, description
          FROM profil_entreprise
          ORDER BY nom_entreprise, user_id
          LIMIT :limit OFFSET :offset'
