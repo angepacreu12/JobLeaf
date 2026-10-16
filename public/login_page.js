@@ -23,7 +23,13 @@ async function appelApi(chemin, options = {}) {
 }
 
 function redirigerSelonRole(role) {
-    window.location.href = role === 'admin' ? 'admin.html' : 'annonces.html';
+    if (role === 'admin') {
+        window.location.href = 'admin.html';
+    } else if (role === 'entreprise') {
+        window.location.href = 'page_entreprise.html';
+    } else {
+        window.location.href = 'page_employe.html';
+    }
 }
 
 // Bouton s'inscrire - se connecter //
