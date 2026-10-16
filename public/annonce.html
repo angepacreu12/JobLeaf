@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Détail de l'annonce</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="annonce.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <!-- Sidebar -->
+            <aside class="flex flex-col items-center pt-5 min-w-[110px] bg-vert-clair">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                </a>
+                <a href="page_employe.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Annonces</a>
+                <a href="document.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Documents</a>
+                <a href="offres.html" class="self-start pl-2 mt-4 text-vert-fonce hover:underline">Mes offres</a>
+            </aside>
+
+            <!-- Contenu principal -->
+            <div class="flex-1 p-6 max-w-3xl mx-auto">
+                <a href="page_employe.html" class="text-vert-fonce hover:underline text-sm">&larr; Retour aux annonces</a>
+
+                <p id="etat-page" class="mt-4 text-vert-fonce">Chargement de l'annonce...</p>
+
+                <!-- Carte détail annonce -->
+                <article id="bloc-annonce" class="hidden bg-white rounded-lg p-6 mt-4 shadow-sm text-vert-fonce">
+                    <div class="flex justify-between items-start gap-4 border-b border-vert-clair pb-4">
+                        <div>
+                            <h2 id="ann-titre" class="font-playfair text-2xl font-bold"></h2>
+                            <p id="ann-entreprise" class="font-semibold text-lg"></p>
+                            <a id="ann-site" href="#" target="_blank" rel="noopener" class="hidden text-sm underline">Site web de l'entreprise</a>
+                        </div>
+                        <span id="ann-ref" class="text-xs text-gray-500"></span>
+                    </div>
+
+                    <!-- Badges infos -->
+                    <div class="flex flex-wrap gap-2 my-4 text-sm">
+                        <span id="ann-contrat" class="bg-vert-clair px-3 py-1 rounded-full font-semibold"></span>
+                        <span id="ann-ville" class="bg-beige-coton px-3 py-1 rounded-full"></span>
+                        <span id="ann-teletravail" class="bg-beige-coton px-3 py-1 rounded-full"></span>
+                        <span id="ann-categorie" class="bg-beige-coton px-3 py-1 rounded-full"></span>
+                        <span id="ann-salaire" class="bg-beige-coton px-3 py-1 rounded-full"></span>
+                        <span id="ann-experience" class="bg-beige-coton px-3 py-1 rounded-full"></span>
+                    </div>
+
+                    <p id="ann-description" class="whitespace-pre-line leading-relaxed mt-4"></p>
+
+                    <!-- Formulaire de candidature (visible pour les candidats) -->
+                    <form id="form-candidature" class="mt-8 pt-6 border-t border-vert-clair flex flex-col gap-4">
+                        <h3 class="font-playfair text-xl font-bold">Postuler à cette offre</h3>
+
+                        <div>
+                            <label for="champ-cv" class="block font-semibold mb-1">CV (format PDF, max 2 Mo)</label>
+                            <input type="file" id="champ-cv" name="cv" accept="application/pdf" required
+                                   class="block w-full text-sm border border-vert-jobleaf rounded p-2 bg-beige-coton">
+                        </div>
+
+                        <div>
+                            <label for="champ-message" class="block font-semibold mb-1">Message d'accompagnement</label>
+                            <textarea id="champ-message" name="message" rows="4" minlength="1" maxlength="5000" required
+                                      placeholder="Présentez-vous et expliquez votre motivation..."
+                                      class="w-full border border-vert-jobleaf rounded p-2 bg-white"></textarea>
+                        </div>
+
+                        <p id="retour-candidature" class="text-sm font-semibold"></p>
+
+                        <button type="submit" class="self-start bg-vert-jobleaf text-white px-6 py-2 rounded-full hover:bg-vert-fonce transition-colors cursor-pointer">
+                            Envoyer ma candidature
+                        </button>
+                    </form>
+                </article>
+            </div>
+        </main>
+    </body>
+</html>

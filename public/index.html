@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JobLeaf</title>
+    <script>
+        async function init() {
+            try {
+                const res = await fetch('/api/me', { credentials: 'same-origin' });
+                if (!res.ok) {
+                    window.location.replace('login_page.html');
+                    return;
+                }
+                const moi = await res.json();
+                if (moi.role === 'admin') {
+                    window.location.replace('admin.html');
+                } else if (moi.role === 'entreprise') {
+                    window.location.replace('page_entreprise.html');
+                } else {
+                    window.location.replace('page_employe.html');
+                }
+            } catch {
+                window.location.replace('login_page.html');
+            }
+        }
+        init();
+    </script>
+</head>
+<body style="background-color: #f7f2e5;">
+</body>
+</html>

@@ -1,34 +1,35 @@
 // Lien API //
-
 const API = '/api';
 
 async function appelApi(chemin, options = {}) {
     const reponse = await fetch(API + chemin, {
-        credentials: 'same-origin',   // envoie le cookie de session
+        credentials: 'same-origin', // envoie le cookie de session
         ...options,
     });
-
     let donnees = null;
     try {
         donnees = await reponse.json();
     } catch {
     }
-
     if (!reponse.ok) {
         const erreur = new Error(donnees?.error ?? `Erreur ${reponse.status}`);
         erreur.status = reponse.status;
         throw erreur;
     }
-
     return donnees;
 }
 
 function redirigerSelonRole(role) {
-    window.location.href = role === 'admin' ? 'admin.html' : 'annonces.html';
+    if (role === 'admin') {
+        window.location.href = 'admin.html';
+    } else if (role === 'entreprise') {
+        window.location.href = 'page_entreprise.html';
+    } else {
+        window.location.href = 'page_employe.html';
+    }
 }
 
 // Vérification autorisation //
-
 let moi = null;
 
 async function chargerProfil() {
@@ -36,19 +37,21 @@ async function chargerProfil() {
         moi = await appelApi('/me');
     } catch (erreur) {
         if (erreur.status === 401) {
-            window.location.href = 'login_page.html';   // pas connecté //
+            window.location.href = 'login_page.html'; // pas connecté
             return;
         }
         throw erreur;
     }
-
+    if (moi.role !== 'candidat') {
+        redirigerSelonRole(moi.role);
+        return;
+    }
     // Le back renvoie user_id, role, username, email, nom, prenom, telephone //
     const photo = document.getElementById('photo-colonne');
     photo.alt = `Profil de ${moi.prenom} ${moi.nom}`;
 }
 
 // Bulle chat & cadre chat //
-
 const bulle = document.getElementById("bulle-messages");
 const boutonOuvrir = document.getElementById("ouvrir-messages");
 const boutonFermer = document.getElementById("fermer-messages");
@@ -64,7 +67,6 @@ function ouvrirMessages() {
     boutonOuvrir.setAttribute("aria-expanded", "true");
     panneau.classList.remove("opacity-0", "invisible");
     boutonFermer.focus();
-
     chargeConversations();
 }
 
@@ -87,60 +89,47 @@ document.addEventListener("keydown", (evenement) => {
 });
 
 async function chargeConversations() {
-    const reponse = await fetch ("/api/conversations");
-    const conversations = await reponse.json();
+    try {
+        const resultat = await appelApi("/conversations");
+        const liste = document.getElementById("liste-conversations");
+        const modele = document.getElementById("modele-conversation");
 
-    const liste = document.getElementById("liste-conversations");
-    const modele = document.getElementById("modele-conversation");
-    liste.innerHTML = "";
+        liste.innerHTML = "";
 
-    for (const conv of conversations) {
-        const ligne = modele.content.cloneNode(true);
+        for (const conv of resultat.items) {
+            const ligne = modele.content.cloneNode(true);
+            ligne.querySelector('[data-champ="entreprise"]').textContent = conv.interlocuteur;
+            ligne.querySelector('[data-champ="apercu"]').textContent = conv.dernier_message?.contenu ?? "Aucun message";
 
-        ligne.querySelector('[data-champ="entreprise"]').textContent = conv.entreprise;
-        ligne.querySelector('[data-champ="apercu"]').textContent = conv.dernier_message;
-        ligne.querySelector('[data-champ="date"]').textContent =
-            new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit"})
-                .format(new Date(conv.date));
-
-        liste.append(ligne);
+            if (conv.dernier_message?.date_envoi) {
+                ligne.querySelector('[data-champ="date"]').textContent =
+                    new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit" })
+                        .format(new Date(conv.dernier_message.date_envoi));
+            }
+            liste.append(ligne);
+        }
+    } catch (erreur) {
+        console.error(erreur);
     }
 }
 
-// Barre de recherche //
-
-const formRecherche = document.getElementById('form-search');
-
-formRecherche.addEventListener('submit', (evenement) => {
-    evenement.preventDefault();
-    chargerAnnonces(new FormData(formRecherche).get('q'));
-});
-
-// Chargement de la page
-chargerProfil().catch((erreur) => {
-    console.error(erreur);
-});
-chargerAnnonces();
-
-// Affichage des annonces 
-
+// Affichage des annonces //
 const dateCourte = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-async function chargerAnnonces(recherche = '') {
+async function chargerAnnonce(recherche = '') {
     const liste = document.getElementById('liste-annonces');
     const message = document.getElementById('message-annonces');
     const modele = document.getElementById('modele-annonce');
 
     message.textContent = 'Chargement...';
 
-    const parametres = new URLSearchParams({ page: '1', per_page: '5' });      // URLSearchParams encode les accents et les espaces
+    const parametres = new URLSearchParams({ page: '1', per_page: '5' });
     if (recherche.trim() !== '') {
         parametres.set('q', recherche.trim());
     }
 
     try {
         const resultat = await appelApi('/annonces?' + parametres);
-
         liste.innerHTML = '';
 
         if (resultat.items.length === 0) {
@@ -151,14 +140,12 @@ async function chargerAnnonces(recherche = '') {
 
         for (const annonce of resultat.items) {
             const carte = modele.content.cloneNode(true);
-
             carte.querySelector('[data-champ="titre"]').textContent = annonce.titre;
             carte.querySelector('[data-champ="entreprise"]').textContent = annonce.entreprise.nom_entreprise;
             carte.querySelector('[data-champ="ville"]').textContent = annonce.ville ?? '';
             carte.querySelector('[data-champ="type_contrat"]').textContent = annonce.type_contrat;
             carte.querySelector('[data-champ="date"]').textContent = dateCourte.format(new Date(annonce.date_publication));
             carte.querySelector('[data-champ="lien"]').href = `annonce.html?id=${annonce.annonce_id}`;
-
             liste.append(carte);
         }
     } catch (erreur) {
@@ -166,3 +153,16 @@ async function chargerAnnonces(recherche = '') {
         message.textContent = erreur.message;
     }
 }
+
+// Barre de recherche //
+const formRecherche = document.getElementById('form-search');
+formRecherche.addEventListener('submit', (evenement) => {
+    evenement.preventDefault();
+    chargerAnnonce(new FormData(formRecherche).get('q'));
+});
+
+// Chargement de la page //
+chargerProfil().catch((erreur) => {
+    console.error(erreur);
+});
+chargerAnnonce();
