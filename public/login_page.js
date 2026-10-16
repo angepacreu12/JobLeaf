@@ -103,13 +103,16 @@ formulaire.addEventListener("submit", async (evenement) => {
     };
 
     if (corps.role === "entreprise") {
+        const ville = champs.get("siege").trim();
+        const site = champs.get("site").trim();
+        const description = champs.get("description").trim();
+
         corps.nom_entreprise = champs.get("nom_entreprise").trim();
-        corps.siret = champs.get("siret");
-        corps.ville = champs.get("siege");
-        corps.site_web = champs.get("site")
-        corps.description = champs.get("description");
-        // TODO : siret / secteur / ville / site_web / description
-        // ne sont pas acceptés par POST /api/users (voir PATCH /api/entreprises/{id}, encore en 🚧)
+        corps.siret = champs.get("siret").trim();
+        corps.secteur = champs.get("secteur").trim();
+        corps.ville = ville === "" ? null : ville;
+        corps.site_web = site === "" ? null : site;
+        corps.description = description === "" ? null : description;
     }
 
     try {
