@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Mes offres (Entreprise)</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="api.js" defer></script>
+        <script src="offres.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <aside class="flex flex-col items-center pt-5 min-w-[140px] bg-vert-clair pb-28">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                </a>
+                <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
+
+                <!-- Bulle message -->
+                <section id="bulle-messages"
+                         class="fixed left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
+                    <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations"
+                            class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                        </svg>
+                    </button>
+                    <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
+                        <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
+                            <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
+                            <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
+                                    class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                        <template id="modele-conversation">
+                            <li>
+                                <a href="#" class="flex gap-3 px-4 py-3 hover:bg-vert-clair">
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex justify-between gap-2">
+                                            <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                            <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                        </span>
+                                        <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                                    </span>
+                                </a>
+                            </li>
+                        </template>
+                    </div>
+                </section>
+            </aside>
+
+            <div class="flex-1 p-6 max-w-4xl mx-auto text-vert-fonce flex flex-col gap-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-playfair text-2xl font-bold">Mes offres d'emploi</h2>
+                    <button id="btn-nouvelle-annonce" type="button"
+                            class="bg-vert-jobleaf text-white px-4 py-2 rounded-full hover:bg-vert-fonce cursor-pointer text-sm font-semibold">
+                        + Nouvelle annonce
+                    </button>
+                </div>
+
+                <!-- Formulaire Création / Édition d'annonce -->
+                <form id="form-annonce" class="hidden bg-white rounded-lg p-6 shadow-sm flex flex-col gap-4">
+                    <h3 id="titre-form-annonce" class="font-playfair text-xl font-bold border-b border-vert-clair pb-2">Nouvelle offre</h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1">Titre du poste *</label>
+                            <input type="text" name="titre" minlength="3" maxlength="150" required class="w-full border border-vert-jobleaf rounded p-2">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Type de contrat *</label>
+                            <select name="type_contrat" required class="w-full border border-vert-jobleaf rounded p-2 bg-white">
+                                <option value="CDI">CDI</option>
+                                <option value="CDD">CDD</option>
+                                <option value="alternance">Alternance</option>
+                                <option value="stage">Stage</option>
+                                <option value="freelance">Freelance</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Catégorie</label>
+                            <select name="category" class="w-full border border-vert-jobleaf rounded p-2 bg-white">
+                                <option value="">-- Aucune --</option>
+                                <option value="Informatique">Informatique</option>
+                                <option value="Hopital">Hôpital</option>
+                                <option value="Parfumerie">Parfumerie</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Télétravail</label>
+                            <select name="teletravail" class="w-full border border-vert-jobleaf rounded p-2 bg-white">
+                                <option value="">-- Non précisé --</option>
+                                <option value="sur site">Sur site</option>
+                                <option value="hybride">Hybride</option>
+                                <option value="full remote">Full remote</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Ville</label>
+                            <input type="text" name="ville" maxlength="100" class="w-full border border-vert-jobleaf rounded p-2">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Salaire min (€)</label>
+                            <input type="number" name="salaire_min" min="0" max="1000000" class="w-full border border-vert-jobleaf rounded p-2">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Salaire max (€)</label>
+                            <input type="number" name="salaire_max" min="0" max="1000000" class="w-full border border-vert-jobleaf rounded p-2">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Niveau d'expérience</label>
+                            <input type="text" name="niveau_experience" maxlength="100" class="w-full border border-vert-jobleaf rounded p-2">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold mb-1">Date d'expiration</label>
+                            <input type="date" name="date_expiration" class="w-full border border-vert-jobleaf rounded p-2">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold mb-1">Description (10 à 5000 caractères) *</label>
+                            <textarea name="description" rows="5" minlength="10" maxlength="5000" required class="w-full border border-vert-jobleaf rounded p-2"></textarea>
+                        </div>
+                    </div>
+
+                    <p id="msg-form-annonce" class="text-sm font-semibold text-red-600"></p>
+
+                    <div class="flex flex-wrap gap-3">
+                        <button type="submit" data-statut="publiee" class="bg-vert-jobleaf text-white px-5 py-2 rounded-full hover:bg-vert-fonce cursor-pointer text-sm font-semibold">
+                            Publier
+                        </button>
+                        <button type="submit" data-statut="brouillon" class="bg-vert-clair text-vert-fonce px-5 py-2 rounded-full hover:bg-vert-jobleaf hover:text-white cursor-pointer text-sm font-semibold">
+                            Enregistrer en brouillon
+                        </button>
+                        <button type="button" id="btn-annuler-form" class="bg-gray-200 text-gray-700 px-5 py-2 rounded-full hover:bg-gray-300 cursor-pointer text-sm">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+
+                <p id="message-annonces" class="mt-2">Chargement...</p>
+                <section id="liste-mes-annonces" class="flex flex-col gap-4"></section>
+
+                <!-- Modèle d'annonce entreprise -->
+                <template id="modele-mon-annonce">
+                    <article class="bg-white rounded-lg p-5 shadow-sm flex flex-col gap-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span data-champ="reference" class="text-xs font-mono bg-beige-coton px-2 py-0.5 rounded"></span>
+                                    <h3 data-champ="titre" class="font-playfair font-bold text-lg"></h3>
+                                    <span data-champ="statut-chip" class="text-xs px-2.5 py-0.5 rounded-full font-bold"></span>
+                                </div>
+                                <p data-champ="infos" class="text-xs text-gray-600 mt-1"></p>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                                <button type="button" data-champ="btn-publier" class="hidden bg-vert-jobleaf text-white px-3 py-1.5 rounded-full hover:bg-vert-fonce cursor-pointer">
+                                    Publier
+                                </button>
+                                <button type="button" data-champ="btn-pourvue" class="hidden bg-amber-100 text-amber-900 px-3 py-1.5 rounded-full hover:bg-amber-200 cursor-pointer">
+                                    Poste pourvu
+                                </button>
+                                <button type="button" data-champ="btn-editer" class="bg-beige-coton text-vert-fonce px-3 py-1.5 rounded-full hover:bg-vert-clair cursor-pointer">
+                                    Modifier
+                                </button>
+                                <button type="button" data-champ="btn-candidatures" class="bg-vert-clair text-vert-fonce px-3 py-1.5 rounded-full hover:bg-vert-jobleaf hover:text-white cursor-pointer"></button>
+                                <button type="button" data-champ="btn-demander-suppr" class="bg-red-100 text-red-700 px-3 py-1.5 rounded-full hover:bg-red-200 cursor-pointer">
+                                    Supprimer
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation de suppression sur place -->
+                        <div data-champ="bloc-confirmer-suppr" class="hidden bg-red-50 border border-red-200 rounded p-3 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-red-800">
+                            <span data-champ="texte-confirmer-suppr"></span>
+                            <div class="flex gap-2 shrink-0">
+                                <button type="button" data-champ="btn-suppr-oui" class="bg-red-600 text-white px-3 py-1 rounded font-bold cursor-pointer">Confirmer</button>
+                                <button type="button" data-champ="btn-suppr-non" class="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded cursor-pointer">Annuler</button>
+                            </div>
+                        </div>
+
+                        <!-- Liste des candidats reçus -->
+                        <div data-champ="bloc-candidatures" class="hidden border-t border-vert-clair pt-3 mt-2 flex flex-col gap-3">
+                            <p data-champ="msg-candidatures" class="text-sm text-gray-500"></p>
+                            <div data-champ="liste-candidats" class="flex flex-col gap-2"></div>
+                        </div>
+                    </article>
+                </template>
+
+                <!-- Modèle d'un candidat reçu -->
+                <template id="modele-candidat-recu">
+                    <div class="bg-beige-coton rounded p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-sm">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <p data-champ="nom-complet" class="font-bold"></p>
+                                <span data-champ="date" class="text-xs text-gray-500"></span>
+                                <span data-champ="chip-statut" class="text-xs px-2 py-0.5 rounded-full font-bold bg-white"></span>
+                            </div>
+                            <p data-champ="contact" class="text-xs text-gray-600"></p>
+                            <p data-champ="message" class="mt-2 whitespace-pre-line text-gray-800 bg-white p-2 rounded border border-vert-clair text-xs"></p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2 shrink-0 text-xs font-semibold">
+                            <a href="#" data-champ="lien-cv" class="hidden bg-white border border-vert-jobleaf text-vert-fonce px-3 py-1.5 rounded-full hover:bg-vert-clair">
+                                Télécharger CV
+                            </a>
+                            <select data-champ="statut-candidature" class="border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                                <option value="envoyee">Envoyée</option>
+                                <option value="vue">Vue</option>
+                                <option value="entretien">Entretien</option>
+                                <option value="acceptee">Acceptée</option>
+                                <option value="refusee">Refusée</option>
+                            </select>
+                            <button type="button" data-champ="btn-repondre" class="bg-vert-jobleaf text-white px-3 py-1.5 rounded-full hover:bg-vert-fonce cursor-pointer">
+                                Répondre
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </main>
+    </body>
+</html>

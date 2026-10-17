@@ -1,10 +1,10 @@
-// Lien API //
+
 
 const API = '/api';
 
 async function appelApi(chemin, options = {}) {
     const reponse = await fetch(API + chemin, {
-        credentials: 'same-origin',   // envoie le cookie de session
+        credentials: 'same-origin',   
         ...options,
     });
 
@@ -12,7 +12,7 @@ async function appelApi(chemin, options = {}) {
     try {
         donnees = await reponse.json();
     } catch {
-        // le serveur n'a pas répondu en JSON
+        
     }
 
     if (!reponse.ok) {
@@ -26,13 +26,18 @@ function redirigerSelonRole(role) {
     if (role === 'admin') {
         window.location.href = 'admin.html';
     } else if (role === 'entreprise') {
-        window.location.href = 'page_entreprise.html';
+        window.location.href = 'offres.html';
     } else {
-        window.location.href = 'page_employe.html';
+        window.location.href = 'annonces.html';
     }
 }
 
-// Bouton s'inscrire - se connecter //
+
+appelApi('/me')
+    .then((moi) => redirigerSelonRole(moi.role))
+    .catch(() => {});
+
+
 
 const boutons = document.querySelectorAll('[data-cible]');
 
@@ -42,7 +47,7 @@ boutons.forEach(bouton => {
         const ouvert = form.classList.toggle('ouvert');
         bouton.setAttribute('aria-expanded', ouvert);
 
-        // Referme l'autre formulaire
+        
         boutons.forEach(autre => {
             if (autre !== bouton) {
                 document.getElementById(autre.dataset.cible).classList.remove('ouvert');
@@ -52,9 +57,9 @@ boutons.forEach(bouton => {
     });
 });
 
-// MDP conditions //
 
-// --- Règles --- //
+
+
 const regles = [
   { test: /.{12,}/,                   message: "12 caractères minimum" },
   { test: /[a-z]/,                    message: "au moins une minuscule" },
@@ -64,7 +69,7 @@ const regles = [
   { test: /^[\x21-\x7E]+$/,           message: "pas d'espace ni d'accent" },
 ];
 
-// --- Fonction validation --- //
+
 function validerMDP(motDePasse) {
   const erreurs = regles
     .filter((regle) => !regle.test.test(motDePasse))
@@ -76,7 +81,7 @@ function validerMDP(motDePasse) {
   };
 }
 
-// Inscription //
+
 
 const formulaire = document.querySelector("#form-inscription");
 const champMdp = document.querySelector("#insc-mdp");
@@ -109,16 +114,16 @@ formulaire.addEventListener("submit", async (evenement) => {
     };
 
     if (corps.role === "entreprise") {
-        const ville = champs.get("siege").trim();
-        const site = champs.get("site").trim();
-        const description = champs.get("description").trim();
-
+        const ouNull = (cle) => {
+            const v = (champs.get(cle) ?? "").trim();
+            return v === "" ? null : v;
+        };
         corps.nom_entreprise = champs.get("nom_entreprise").trim();
-        corps.siret = champs.get("siret").trim();
-        corps.secteur = champs.get("secteur").trim();
-        corps.ville = ville === "" ? null : ville;
-        corps.site_web = site === "" ? null : site;
-        corps.description = description === "" ? null : description;
+        corps.siret = ouNull("siret");
+        corps.secteur = ouNull("secteur");
+        corps.ville = ouNull("siege");
+        corps.site_web = ouNull("site");
+        corps.description = ouNull("description");
     }
 
     try {
@@ -128,7 +133,7 @@ formulaire.addEventListener("submit", async (evenement) => {
             body: JSON.stringify(corps),
         });
 
-        // L'inscription ne connecte pas : on enchaîne avec le login
+        
         const session = await appelApi("/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -143,7 +148,7 @@ formulaire.addEventListener("submit", async (evenement) => {
     }
 });
 
-// Connexion //
+
 
 const formConnexion = document.querySelector("#form-connexion");
 const zoneErreursConnexion = document.querySelector("#erreurs-connexion");
@@ -175,7 +180,7 @@ formConnexion.addEventListener("submit", async (evenement) => {
     }
 });
 
-// Numéro SIRET & téléphone conditions //
+
 
 document.querySelectorAll('.chiffres-seulement').forEach(champ => {
     champ.addEventListener('input', () => {
@@ -183,7 +188,7 @@ document.querySelectorAll('.chiffres-seulement').forEach(champ => {
     });
 });
 
-// Affichage du bloc employeur si case cochée //
+
 
 const profil = document.getElementById('insc-profil');
 const blocEmployeur = document.querySelector('.entreprise');

@@ -15,18 +15,25 @@ function handle_list_annonces(): never {
 
 function handle_get_annonce(string $id): never {
     $user = current_user();
+    $mon_statut = $user['role'] === 'candidat'
+        ? find_my_candidature_statut(db(), $id, $user['user_id'])
+        : null;
+
     $annonce = find_annonce(db(), $id);
     if ($annonce === null) {
         $annonce = find_annonce(db(), $id, false);
-        if ($annonce === null){
+        if ($annonce === null) {
             json_response(404, ['error' => 'Not found']);
         }
         $is_admin = $user['role'] === 'admin';
         $is_owner = $user['user_id'] === $annonce['entreprise']['user_id'];
-        if($is_admin !== true && $is_owner != true){
+        if ($is_admin !== true && $is_owner !== true && $mon_statut === null) {
             json_response(404, ['error' => 'Not found']);
         }
     }
+
+    $annonce['deja_postule'] = ($mon_statut !== null);
+    $annonce['ma_candidature_statut'] = $mon_statut;
     json_response(200, $annonce);
 }
 
@@ -146,4 +153,14 @@ function handle_update_annonce(string $id): never {
 
     update_annonce(db(), $id, $changes);
     json_response(200, find_annonce(db(), $id, false));
+}
+
+function has_applied(PDO $pdo, string $annonce_id, string $user_id): bool {
+    $stmt = $pdo->prepare(
+        'SELECT 1 FROM candidature WHERE annonce_id = :annonce_id AND candidat_id = :user_id'
+    );
+    $stmt->bindValue(':annonce_id', $annonce_id);
+    $stmt->bindValue(':user_id', $user_id);
+    $stmt->execute();
+    return $stmt->fetchColumn() !== false;
 }

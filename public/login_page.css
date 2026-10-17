@@ -21,7 +21,7 @@
 }
 
 
-/* =====================  TELEPHONE  ===================== */
+
 
 * {
   margin: 0;
@@ -68,7 +68,7 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Taille titre */
+
 
 h1 { 
     font-size: 3rem;
@@ -87,20 +87,20 @@ h3 {
     text-align: center;
 }
 
-/* Placement inscription/connexion */
+
 
 .item {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-    /* colonne de gauche */
+   
     
     .item-gauche {
         line-height: 2;
     }
 
-    /* colonne de droite */
+   
 
     .item-droite {
         position: relative;
@@ -109,7 +109,7 @@ h3 {
         line-height: 2;
     }
 
-/* Design bouton */
+
 
 .bouton {
     display: inline-block;
@@ -123,13 +123,13 @@ h3 {
     transition: background-color 0.2s;
 }
 
-/* Change de couleur au survol */
+
 
 .bouton:hover {
     background-color: rgb(37, 75, 12);
 }
 
-/* Déroulement des formulaires */
+
 
 .formulaire {
     display: grid;
@@ -163,7 +163,7 @@ h3 {
     justify-self: start;
 }
 
-/* Form employeur caché par défaut */
+
 
 .entreprise {
     display: none;
@@ -174,25 +174,25 @@ h3 {
     gap: 0.3rem;
 }
 
-/* Agrandissement colonne sélectionnée */
+
 
 .item:has(.formulaire.ouvert){
     grid-template-columns: 1fr;
 }
 
-/* inscription ouvert */
+
 
 .item:has(#form-inscription.ouvert) .item-droite {
     display: none;
 }
 
-/* connexion ouvert */
+
 
 .item:has(#form-connexion.ouvert) .item-gauche {
     display: none;
 }
 
-/* trait de séparation inexistant */
+
 
 .item:has(#form-connexion.ouvert) .item-droite {
     border-left: none;
@@ -200,7 +200,7 @@ h3 {
 }
 
 
-/* ================== A PROPOS ================= */
+
 
 .article {
     

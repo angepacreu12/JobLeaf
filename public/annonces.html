@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Annonces</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="api.js" defer></script>
+        <script src="annonces.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <aside class="flex flex-col items-center pt-5 min-w-[140px] bg-vert-clair pb-28">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                </a>
+                <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
+
+                <!-- Bulle message -->
+                <section id="bulle-messages"
+                         class="fixed left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
+                    <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations"
+                            class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                        </svg>
+                    </button>
+
+                    <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
+                        <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
+                            <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
+                            <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
+                                    class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                        <template id="modele-conversation">
+                            <li>
+                                <a href="#" class="flex gap-3 px-4 py-3 hover:bg-vert-clair">
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex justify-between gap-2">
+                                            <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                            <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                        </span>
+                                        <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                                    </span>
+                                </a>
+                            </li>
+                        </template>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Zone principale : Filtres + Cartes + Pagination -->
+            <div class="flex-1 flex flex-col items-center p-6 max-w-4xl mx-auto">
+                <form id="form-search" class="w-full bg-white p-4 rounded-lg shadow-sm grid grid-cols-1 sm:grid-cols-5 gap-3 text-sm text-vert-fonce">
+                    <input type="search" name="q" placeholder="Mot-clé (min 2 car.)" class="border border-vert-jobleaf rounded px-3 py-1.5">
+                    <input type="text" name="ville" placeholder="Ville" class="border border-vert-jobleaf rounded px-3 py-1.5">
+                    <select name="type_contrat" class="border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                        <option value="">Tous contrats</option>
+                        <option value="CDI">CDI</option>
+                        <option value="CDD">CDD</option>
+                        <option value="alternance">Alternance</option>
+                        <option value="stage">Stage</option>
+                        <option value="freelance">Freelance</option>
+                    </select>
+                    <select name="category" class="border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                        <option value="">Toutes catégories</option>
+                        <option value="Informatique">Informatique</option>
+                        <option value="Hopital">Hôpital</option>
+                        <option value="Parfumerie">Parfumerie</option>
+                    </select>
+                    <div class="flex gap-2">
+                        <select name="teletravail" class="flex-1 border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                            <option value="">Télétravail</option>
+                            <option value="sur site">Sur site</option>
+                            <option value="hybride">Hybride</option>
+                            <option value="full remote">Full remote</option>
+                        </select>
+                        <button type="submit" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full hover:bg-vert-fonce font-semibold cursor-pointer">
+                            Filtrer
+                        </button>
+                    </div>
+                </form>
+
+                <p id="message-annonces" class="mt-6 text-vert-fonce"></p>
+                <section id="liste-annonces" class="mt-4 flex flex-col gap-4 w-full"></section>
+
+                <!-- Pagination -->
+                <div id="pagination-annonces" class="hidden mt-6 flex items-center gap-4 text-sm text-vert-fonce">
+                    <button type="button" id="page-prec" class="bg-white border border-vert-jobleaf px-4 py-1.5 rounded-full hover:bg-vert-clair disabled:opacity-40 cursor-pointer">
+                        &larr; Précédent
+                    </button>
+                    <span id="page-info" class="font-semibold"></span>
+                    <button type="button" id="page-suiv" class="bg-white border border-vert-jobleaf px-4 py-1.5 rounded-full hover:bg-vert-clair disabled:opacity-40 cursor-pointer">
+                        Suivant &rarr;
+                    </button>
+                </div>
+
+                <!-- Modèle de carte annonce avec "En savoir plus" et "Postuler" intégrés -->
+                <template id="modele-annonce">
+                    <article class="bg-white rounded-lg p-5 shadow-sm text-vert-fonce flex flex-col gap-2">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h2 data-champ="titre" class="font-playfair font-bold text-lg"></h2>
+                                <a href="#" data-champ="entreprise" class="font-semibold text-sm hover:underline"></a>
+                            </div>
+                            <span data-champ="reference" class="text-xs text-gray-500"></span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span data-champ="type_contrat" class="bg-vert-clair px-2.5 py-0.5 rounded-full font-semibold"></span>
+                            <span data-champ="category" class="bg-beige-coton px-2.5 py-0.5 rounded-full"></span>
+                            <span data-champ="ville" class="bg-beige-coton px-2.5 py-0.5 rounded-full"></span>
+                            <span data-champ="date" class="text-gray-500 self-center"></span>
+                        </div>
+
+                        <p data-champ="extrait" class="text-sm text-gray-700 mt-1"></p>
+
+                        <button type="button" data-champ="btn-savoir-plus"
+                                class="self-start mt-2 text-sm font-semibold text-vert-jobleaf hover:underline cursor-pointer">
+                            En savoir plus &darr;
+                        </button>
+
+                        <!-- Zone dépliée "En savoir plus" -->
+                        <div data-champ="bloc-detail" class="hidden border-t border-vert-clair pt-4 mt-2 flex flex-col gap-3 text-sm">
+                            <div data-champ="badges-detail" class="flex flex-wrap gap-2 text-xs"></div>
+                            <p data-champ="description-complete" class="whitespace-pre-line leading-relaxed"></p>
+                            <p data-champ="infos-entreprise" class="text-xs text-gray-600"></p>
+
+                            <div data-champ="deja-postule" class="hidden bg-vert-clair px-3 py-2 rounded font-semibold text-xs">
+                                Vous avez déjà postulé à cette annonce.
+                            </div>
+
+                            <button type="button" data-champ="btn-ouvrir-postuler"
+                                    class="hidden self-start bg-vert-jobleaf text-white px-4 py-1.5 rounded-full hover:bg-vert-fonce text-xs font-semibold cursor-pointer">
+                                Postuler à cette offre
+                            </button>
+
+                            <!-- Formulaire de candidature intégré -->
+                            <form data-champ="form-postuler" class="hidden bg-beige-coton p-4 rounded-lg flex flex-col gap-3 mt-2">
+                                <p data-champ="identite-candidat" class="text-xs text-gray-600 font-semibold"></p>
+                                <div>
+                                    <label class="block text-xs font-semibold mb-1">CV (PDF uniquement, max 2 Mo) *</label>
+                                    <input type="file" name="cv" accept="application/pdf" required class="block w-full text-xs bg-white border border-vert-jobleaf rounded p-1.5">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold mb-1">Message de candidature *</label>
+                                    <textarea name="message" rows="3" minlength="1" maxlength="5000" required class="w-full bg-white border border-vert-jobleaf rounded p-2 text-sm"></textarea>
+                                </div>
+                                <p data-champ="erreur-postuler" class="text-xs font-semibold text-red-600"></p>
+                                <button type="submit" class="self-start bg-vert-jobleaf text-white px-4 py-1.5 rounded-full hover:bg-vert-fonce text-xs font-semibold cursor-pointer">
+                                    Envoyer ma candidature
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                </template>
+            </div>
+        </main>
+    </body>
+</html>

@@ -219,4 +219,15 @@ function update_annonce(PDO $pdo, string $annonce_id, array $changes): void {
     $stmt->bindValue(':id', $annonce_id);
     $stmt->execute();
 }
+
+function find_my_candidature_statut(PDO $pdo, string $annonce_id, string $user_id): ?string {
+    $stmt = $pdo->prepare(
+        'SELECT statut FROM candidature WHERE annonce_id = :annonce_id AND candidat_id = :user_id'
+    );
+    $stmt->bindValue(':annonce_id', $annonce_id);
+    $stmt->bindValue(':user_id', $user_id);
+    $stmt->execute();
+    $statut = $stmt->fetchColumn();
+    return $statut === false ? null : $statut;
+}
     

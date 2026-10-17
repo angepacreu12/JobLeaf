@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Mes candidatures</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="api.js" defer></script>
+        <script src="candidatures.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <aside class="flex flex-col items-center pt-5 min-w-[140px] bg-vert-clair pb-28">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                </a>
+                <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
+
+                <!-- Bulle message -->
+                <section id="bulle-messages"
+                         class="fixed left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
+                    <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations"
+                            class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                        </svg>
+                    </button>
+                    <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
+                        <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
+                            <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
+                            <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
+                                    class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                        <template id="modele-conversation">
+                            <li>
+                                <a href="#" class="flex gap-3 px-4 py-3 hover:bg-vert-clair">
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex justify-between gap-2">
+                                            <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                            <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                        </span>
+                                        <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                                    </span>
+                                </a>
+                            </li>
+                        </template>
+                    </div>
+                </section>
+            </aside>
+
+            <div class="flex-1 p-6 max-w-3xl mx-auto text-vert-fonce">
+                <h2 class="font-playfair text-2xl font-bold mb-4">Mes candidatures</h2>
+
+                <p id="message-candidatures" class="mt-4">Chargement...</p>
+                <section id="liste-candidatures" class="flex flex-col gap-4 mt-4"></section>
+
+                <template id="modele-candidature">
+                    <article class="bg-white rounded-lg p-4 shadow-sm flex flex-col gap-3">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="min-w-0 flex-1">
+                                <button type="button" data-champ="btn-detail" class="font-playfair font-bold text-lg hover:underline text-left cursor-pointer block truncate"></button>
+                                <p data-champ="entreprise" class="font-semibold text-sm"></p>
+                                <p data-champ="date" class="text-xs text-gray-500 mt-1"></p>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span data-champ="statut" class="px-3 py-1 rounded-full text-xs font-bold"></span>
+                                <a href="#" data-champ="lien-cv" class="hidden text-xs bg-beige-coton px-3 py-1.5 rounded-full font-semibold hover:bg-vert-clair">Mon CV</a>
+                                <button type="button" data-champ="btn-messages"
+                                        class="text-xs bg-vert-jobleaf text-white px-3 py-1.5 rounded-full hover:bg-vert-fonce cursor-pointer font-semibold">
+                                    Messages
+                                </button>
+                                <button type="button" data-champ="btn-demander-retrait"
+                                        class="text-xs bg-red-100 text-red-700 px-3 py-1.5 rounded-full hover:bg-red-200 cursor-pointer font-semibold">
+                                    Retirer
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation de retrait sur la page -->
+                        <div data-champ="bloc-confirmer-retrait" class="hidden bg-red-50 border border-red-200 rounded p-3 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-red-800">
+                            <span>Retirer cette candidature supprimera aussi tous les messages associés. Confirmer ?</span>
+                            <div class="flex gap-2 shrink-0">
+                                <button type="button" data-champ="btn-confirmer-oui" class="bg-red-600 text-white px-3 py-1 rounded font-bold hover:bg-red-800 cursor-pointer">Oui, supprimer</button>
+                                <button type="button" data-champ="btn-confirmer-non" class="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">Annuler</button>
+                            </div>
+                        </div>
+
+                        <!-- Détail de l'annonce déplié sur place -->
+                        <div data-champ="bloc-detail-annonce" class="hidden border-t border-vert-clair pt-3 text-sm"></div>
+                    </article>
+                </template>
+            </div>
+        </main>
+    </body>
+</html>

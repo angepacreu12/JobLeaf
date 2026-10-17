@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Administration</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="api.js" defer></script>
+        <script src="admin.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf Admin</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <aside class="flex flex-col items-center pt-5 min-w-[140px] bg-vert-clair pb-28">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                </a>
+                <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
+            </aside>
+
+            <div class="flex-1 p-6 max-w-5xl mx-auto text-vert-fonce flex flex-col gap-6">
+                <!-- Onglets -->
+                <div class="flex gap-2 border-b border-vert-jobleaf pb-3 text-sm font-semibold">
+                    <button type="button" data-onglet="utilisateurs" class="tab-btn px-4 py-2 rounded-t bg-vert-jobleaf text-white cursor-pointer">Utilisateurs</button>
+                    <button type="button" data-onglet="annonces" class="tab-btn px-4 py-2 rounded-t bg-white text-vert-fonce hover:bg-vert-clair cursor-pointer">Annonces</button>
+                    <button type="button" data-onglet="candidatures" class="tab-btn px-4 py-2 rounded-t bg-white text-vert-fonce hover:bg-vert-clair cursor-pointer">Candidatures</button>
+                    <button type="button" data-onglet="entreprises" class="tab-btn px-4 py-2 rounded-t bg-white text-vert-fonce hover:bg-vert-clair cursor-pointer">Entreprises</button>
+                </div>
+
+                <p id="admin-msg" class="text-sm font-semibold"></p>
+
+                <!-- TAB 1: UTILISATEURS -->
+                <section id="tab-utilisateurs" class="tab-content flex flex-col gap-4">
+                    <div class="flex gap-3">
+                        <select id="filtre-role-user" class="border border-vert-jobleaf rounded p-1.5 bg-white text-xs">
+                            <option value="">Tous les rôles</option>
+                            <option value="candidat">Candidat</option>
+                            <option value="entreprise">Entreprise</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="bg-white rounded shadow-sm overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-vert-clair border-b border-vert-jobleaf">
+                                <tr>
+                                    <th class="p-3">Nom & Prénom</th>
+                                    <th class="p-3">Email</th>
+                                    <th class="p-3">Username</th>
+                                    <th class="p-3">Rôle</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corps-table-users" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB 2: ANNONCES -->
+                <section id="tab-annonces" class="tab-content hidden flex flex-col gap-4">
+                    <div class="bg-white rounded shadow-sm overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-vert-clair border-b border-vert-jobleaf">
+                                <tr>
+                                    <th class="p-3">Réf</th>
+                                    <th class="p-3">Titre</th>
+                                    <th class="p-3">Contrat</th>
+                                    <th class="p-3">Statut</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corps-table-annonces" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB 3: CANDIDATURES -->
+                <section id="tab-candidatures" class="tab-content hidden flex flex-col gap-4">
+                    <div class="bg-white rounded shadow-sm overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-vert-clair border-b border-vert-jobleaf">
+                                <tr>
+                                    <th class="p-3">Candidat</th>
+                                    <th class="p-3">Annonce</th>
+                                    <th class="p-3">Statut</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corps-table-candidatures" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- TAB 4: ENTREPRISES -->
+                <section id="tab-entreprises" class="tab-content hidden flex flex-col gap-4">
+                    <div class="bg-white rounded shadow-sm overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-vert-clair border-b border-vert-jobleaf">
+                                <tr>
+                                    <th class="p-3">Nom Entreprise</th>
+                                    <th class="p-3">SIRET</th>
+                                    <th class="p-3">Secteur</th>
+                                    <th class="p-3">Ville</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corps-table-entreprises" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </body>
+</html>

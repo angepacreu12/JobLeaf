@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Mon Profil</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="api.js" defer></script>
+        <script src="profil.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <aside class="flex flex-col items-center pt-5 min-w-[140px] bg-vert-clair pb-28">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf transition-transform duration-200 group-hover:scale-110">
+                </a>
+                <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
+
+                <!-- Bulle message -->
+                <section id="bulle-messages"
+                         class="fixed left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
+                    <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations"
+                            class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                        </svg>
+                    </button>
+                    <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
+                        <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
+                            <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
+                            <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
+                                    class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                        <template id="modele-conversation">
+                            <li>
+                                <a href="#" class="flex gap-3 px-4 py-3 hover:bg-vert-clair">
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex justify-between gap-2">
+                                            <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                            <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                        </span>
+                                        <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                                    </span>
+                                </a>
+                            </li>
+                        </template>
+                    </div>
+                </section>
+            </aside>
+
+            <div class="flex-1 p-6 max-w-2xl mx-auto flex flex-col gap-6 text-vert-fonce">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-playfair text-2xl font-bold">Mon Profil</h2>
+                    <a href="/api/me/export" class="bg-white border border-vert-jobleaf text-vert-fonce px-4 py-2 rounded-full hover:bg-vert-clair text-sm font-semibold">
+                        Télécharger mes données (GDPR)
+                    </a>
+                </div>
+
+                <!-- 1. Infos personnelles -->
+                <form id="form-profil" class="bg-white rounded-lg p-6 shadow-sm flex flex-col gap-3 text-sm">
+                    <h3 class="font-playfair text-xl font-bold border-b border-vert-clair pb-2">Informations personnelles</h3>
+
+                    <label class="font-semibold">Prénom</label>
+                    <input type="text" name="prenom" required class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Nom</label>
+                    <input type="text" name="nom" required class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Nom d'utilisateur (3–30 car.)</label>
+                    <input type="text" name="username" minlength="3" maxlength="30" required class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Email</label>
+                    <input type="email" name="email" required class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Téléphone</label>
+                    <input type="tel" name="telephone" class="border border-vert-jobleaf rounded p-2">
+
+                    <p id="msg-profil" class="font-semibold"></p>
+                    <button type="submit" class="self-start bg-vert-jobleaf text-white px-5 py-2 rounded-full hover:bg-vert-fonce cursor-pointer font-semibold">
+                        Enregistrer les modifications
+                    </button>
+                </form>
+
+                <!-- 2. Infos entreprise (si rôle === 'entreprise') -->
+                <form id="form-entreprise" class="hidden bg-white rounded-lg p-6 shadow-sm flex flex-col gap-3 text-sm">
+                    <h3 class="font-playfair text-xl font-bold border-b border-vert-clair pb-2">Profil Entreprise</h3>
+
+                    <label class="font-semibold">Nom de l'entreprise *</label>
+                    <input type="text" name="nom_entreprise" required class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Numéro SIRET (14 chiffres)</label>
+                    <input type="text" name="siret" maxlength="14" class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Secteur</label>
+                    <input type="text" name="secteur" class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Ville du siège</label>
+                    <input type="text" name="ville" class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Site web</label>
+                    <input type="url" name="site_web" placeholder="https://..." class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Description</label>
+                    <textarea name="description" rows="4" class="border border-vert-jobleaf rounded p-2"></textarea>
+
+                    <p id="msg-entreprise" class="font-semibold"></p>
+                    <button type="submit" class="self-start bg-vert-jobleaf text-white px-5 py-2 rounded-full hover:bg-vert-fonce cursor-pointer font-semibold">
+                        Mettre à jour l'entreprise
+                    </button>
+                </form>
+
+                <!-- 3. Mot de passe -->
+                <form id="form-mdp" class="bg-white rounded-lg p-6 shadow-sm flex flex-col gap-3 text-sm">
+                    <h3 class="font-playfair text-xl font-bold border-b border-vert-clair pb-2">Modifier le mot de passe</h3>
+
+                    <label class="font-semibold">Ancien mot de passe</label>
+                    <input type="password" name="old_password" required class="border border-vert-jobleaf rounded p-2">
+
+                    <label class="font-semibold">Nouveau mot de passe (12 caractères min.)</label>
+                    <input type="password" name="new_password" minlength="12" required class="border border-vert-jobleaf rounded p-2">
+
+                    <p id="msg-mdp" class="font-semibold"></p>
+                    <button type="submit" class="self-start bg-vert-jobleaf text-white px-5 py-2 rounded-full hover:bg-vert-fonce cursor-pointer font-semibold">
+                        Changer le mot de passe
+                    </button>
+                </form>
+
+                <!-- 4. Suppression de compte (Crypto-shredding) -->
+                <form id="form-suppression" class="bg-white rounded-lg p-6 shadow-sm border border-red-300 flex flex-col gap-3 text-sm">
+                    <h3 class="font-playfair text-xl font-bold text-red-700 border-b border-red-200 pb-2">Zone de danger</h3>
+                    <p class="text-xs text-gray-700">La suppression efface définitivement votre compte et déclenche la destruction cryptographique de vos clés.</p>
+
+                    <label class="font-semibold">Confirmez votre mot de passe</label>
+                    <input type="password" name="password" required class="border border-red-400 rounded p-2">
+
+                    <p id="msg-suppression" class="font-semibold text-red-600"></p>
+                    <button type="submit" class="self-start bg-red-600 text-white px-5 py-2 rounded-full hover:bg-red-800 cursor-pointer font-semibold">
+                        Supprimer mon compte
+                    </button>
+                </form>
+            </div>
+        </main>
+    </body>
+</html>
