@@ -96,7 +96,7 @@
                     <h4>Vous êtes déjà une feuille ?</h4>
                     <p>Connectez-vous !</p>
                     <button type="button" class="cadre bouton" data-cible="form-connexion" aria-expanded="false">Se connecter</button>
-
+                    
                     <form id="form-connexion" class="formulaire">
 
                         <label for="co-email">Email</label>
@@ -110,6 +110,27 @@
                         <button type="submit" class="bouton">Se connecter</button>
 
                     </form>
+
+                    <p style="margin-top: 0.8rem;">
+                        <button type="button" id="btn-mdp-oublie" style="background:none;border:none;color:rgb(37,75,12);text-decoration:underline;cursor:pointer;font:inherit;font-size:0.9rem;">
+                            Mot de passe oublié ?
+                        </button>
+                    </p>
+                    <form id="form-reset-mdp" class="formulaire">
+                        <label for="reset-email">Votre email</label>
+                        <input type="email" id="reset-email" name="email" required>
+                        <button type="button" id="btn-generer-token" class="bouton">1. Recevoir le code (Console)</button>
+
+                        <label for="reset-token">Jeton de réinitialisation (voir F12 Console)</label>
+                        <input type="text" id="reset-token" name="token" required>
+
+                        <label for="reset-nouveau-mdp">Nouveau mot de passe (12+ car.)</label>
+                        <input type="password" id="reset-nouveau-mdp" name="new_password" minlength="12" required>
+
+                        <p id="msg-reset-mdp"></p>
+                        <button type="submit" class="bouton">2. Réinitialiser mon mot de passe</button>
+                    </form>
+                    
                 </div>
 
             </div>

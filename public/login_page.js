@@ -205,3 +205,59 @@ function majBlocEmployeur() {
 
 profil.addEventListener('change', majBlocEmployeur);
 majBlocEmployeur();
+
+// Mot de passe oublié (affiche le token dans console.log) //
+const btnOublie = document.getElementById('btn-mdp-oublie');
+const formReset = document.getElementById('form-reset-mdp');
+const msgReset = document.getElementById('msg-reset-mdp');
+
+if (btnOublie && formReset) {
+    btnOublie.addEventListener('click', () => {
+        formReset.classList.toggle('ouvert');
+    });
+
+    document.getElementById('btn-generer-token').addEventListener('click', async () => {
+        const email = document.getElementById('reset-email').value.trim();
+        if (!email) {
+            msgReset.textContent = 'Veuillez saisir votre email.';
+            return;
+        }
+        try {
+            const res = await appelApi('/password-reset/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            if (res.debug_token) {
+                console.log('🔑 JETON DE RÉINITIALISATION JOBLEAF :', res.debug_token);
+                document.getElementById('reset-token').value = res.debug_token;
+            }
+            msgReset.textContent = 'Jeton généré dans la console (F12) et pré-rempli !';
+        } catch (err) {
+            msgReset.textContent = err.message;
+        }
+    });
+
+    formReset.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const verif = validerMDP(document.getElementById('reset-nouveau-mdp').value);
+        if (!verif.valide) {
+            msgReset.textContent = 'Il manque : ' + verif.erreurs.join(', ');
+            return;
+        }
+        try {
+            await appelApi('/password-reset/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: document.getElementById('reset-token').value.trim(),
+                    new_password: document.getElementById('reset-nouveau-mdp').value,
+                }),
+            });
+            msgReset.textContent = 'Mot de passe réinitialisé ! Vous pouvez vous connecter.';
+            formReset.reset();
+        } catch (err) {
+            msgReset.textContent = err.message;
+        }
+    });
+}

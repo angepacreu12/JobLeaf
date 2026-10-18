@@ -159,3 +159,67 @@ function handle_register(): never{
     }
     json_response($result['status'], ['error' => $result['error']]);
 }
+
+function handle_password_reset_request(): never {
+    $body = read_json_body();
+    if ($body === null) {
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $email = validate_email($body, 'email', true);
+    $email_index = get_hmask_index_mail($email);
+    $user = find_user_by_email_index(db(), $email_index);
+
+    if ($user === null) {
+        // Réponse identique pour éviter l'énumération d'emails
+        json_response(200, ['status' => 'Reset link generated (check console)']);
+    }
+
+    // Jeton stateless signé par HMAC (valide 15 minutes, lié au hash actuel du MDP)
+    $expires = time() + 900;
+    $payload = $user['user_id'] . '|' . $expires;
+    $sig = hash_hmac('sha256', $payload . '|' . $user['password_hash'], get_HMAC_key());
+    $reset_token = base64_encode($payload . '|' . $sig);
+
+    error_log("=== [PASSWORD RESET TOKEN for $email] === " . $reset_token);
+
+    json_response(200, [
+        'status'      => 'Reset token generated (printed in console.log)',
+        'debug_token' => $reset_token,
+    ]);
+}
+
+function handle_password_reset_confirm(): never {
+    $body = read_json_body();
+    if ($body === null) {
+        json_response(400, ['error' => 'Invalid JSON']);
+    }
+    $token = get_string($body, 'token');
+    if ($token === null || $token === '') {
+        json_response(400, ['error' => 'token: is required']);
+    }
+    $new_password = validate_password($body, 'new_password');
+
+    $decoded = base64_decode($token, true);
+    if ($decoded === false || substr_count($decoded, '|') !== 2) {
+        json_response(400, ['error' => 'Invalid or expired token']);
+    }
+
+    [$user_id, $expires, $sig] = explode('|', $decoded, 3);
+    if ((int) $expires < time()) {
+        json_response(400, ['error' => 'Token expired']);
+    }
+
+    $pdo = db();
+    $current_hash = find_password_hash($pdo, $user_id);
+    if ($current_hash === null) {
+        json_response(400, ['error' => 'Invalid token']);
+    }
+
+    $expected_sig = hash_hmac('sha256', $user_id . '|' . $expires . '|' . $current_hash, get_HMAC_key());
+    if (!hash_equals($expected_sig, $sig)) {
+        json_response(400, ['error' => 'Invalid or already used token']);
+    }
+
+    update_password_hash($pdo, $user_id, hash_password($new_password));
+    json_response(200, ['status' => 'Password reset successful']);
+}

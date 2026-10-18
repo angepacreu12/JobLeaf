@@ -34,6 +34,8 @@ $routes = [
     '#^/api/entreprises$#' => ['GET' => 'handle_list_entreprises'],
     '#^/api/entreprises/(' . UUID_RE . ')$#' => ['GET' => 'handle_get_entreprise', 'PATCH' => 'handle_update_entreprise'],
     '#^/api/entreprises/(' . UUID_RE . ')/annonces$#' => ['GET' => 'handle_entreprise_annonces'],
+    '#^/api/password-reset/request$#' => ['POST' => 'handle_password_reset_request'],
+    '#^/api/password-reset/confirm$#' => ['POST' => 'handle_password_reset_confirm'],
 ];
 
 try {
