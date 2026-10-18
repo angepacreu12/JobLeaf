@@ -108,19 +108,24 @@ function decrypt_candidatures(PDO $pdo, array $rows): array {
         $message_candidat = decrypt_field(bytea_to_string($row['message_chiffre']), $dek);
 
         $items[] = [
-              'candidature_id'=> $row['candidature_id'], 
-              'statut'=> $row['statut'], 
-              'date_candidature'=> $row['date_candidature'], 
-              'has_cv'=> $row['has_cv'],
-              'message'  => $message_candidat,
-              'candidat' => [ 
-                 'user_id' => $row['candidat_id'], 
-                 'nom'=> $nom_candidat, 
-                 'prenom'=> $prenom_candidat, 
-                 'email'=> $email_candidat, 
-                 'telephone'=> $telephone_candidat, 
-                ],
-            ];
+            'candidature_id'   => $row['candidature_id'],
+            'statut'           => $row['statut'],
+            'date_candidature' => $row['date_candidature'],
+            'has_cv'           => $row['has_cv'],
+            'message'          => $message_candidat,
+            'annonce'          => [
+                'annonce_id' => $row['annonce_id'] ?? null,
+                'reference'  => $row['annonce_reference'] ?? null,
+                'titre'      => $row['annonce_titre'] ?? null,
+            ],
+            'candidat' => [
+                'user_id'   => $row['candidat_id'],
+                'nom'       => $nom_candidat,
+                'prenom'    => $prenom_candidat,
+                'email'     => $email_candidat,
+                'telephone' => $telephone_candidat,
+            ],
+        ];
     }
     return $items;
 }

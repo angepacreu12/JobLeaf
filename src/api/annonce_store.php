@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 function list_annonces(PDO $pdo, array $filter, array $pagination): array {
-    $where  = ["a.statut = 'publiee'", "(a.date_expiration IS NULL OR a.date_expiration > now())"];
+    $where  = ($filter['all_status'] ?? false)
+        ? ['true']
+        : ["a.statut = 'publiee'", "(a.date_expiration IS NULL OR a.date_expiration > now())"];
     $params = [];
     if ($filter['q'] !== null){
         $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $filter['q']);
@@ -44,10 +46,12 @@ function list_annonces(PDO $pdo, array $filter, array $pagination): array {
 
 
     $stmt2 = $pdo->prepare(
-        "SELECT a.annonce_id, a.reference, a.titre , left(a.description, 200) AS extrait , a.type_contrat, a.category, a.ville, a.date_publication , p.user_id AS entreprise_id, p.nom_entreprise
+        "SELECT a.annonce_id, a.reference, a.titre, left(a.description, 200) AS extrait,
+                a.type_contrat, a.category, a.ville, a.statut, a.date_publication,
+                p.user_id AS entreprise_id, p.nom_entreprise
          FROM annonce a JOIN profil_entreprise p ON p.user_id = a.entreprise_id
          WHERE $where_sql
-         ORDER BY a.date_publication DESC, a.annonce_id DESC
+         ORDER BY a.created_at DESC, a.annonce_id DESC
          LIMIT :limit OFFSET :offset"
     );
     foreach ($params as $name => $value) {

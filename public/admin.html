@@ -36,27 +36,77 @@
                 <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
             </aside>
 
-            <div class="flex-1 p-6 max-w-5xl mx-auto text-vert-fonce flex flex-col gap-6">
+            <div class="flex-1 p-6 max-w-6xl mx-auto text-vert-fonce flex flex-col gap-6">
                 <!-- Onglets -->
-                <div class="flex gap-2 border-b border-vert-jobleaf pb-3 text-sm font-semibold">
+                <div class="flex flex-wrap gap-2 border-b border-vert-jobleaf pb-3 text-sm font-semibold">
                     <button type="button" data-onglet="utilisateurs" class="tab-btn px-4 py-2 rounded-t bg-vert-jobleaf text-white cursor-pointer">Utilisateurs</button>
                     <button type="button" data-onglet="annonces" class="tab-btn px-4 py-2 rounded-t bg-white text-vert-fonce hover:bg-vert-clair cursor-pointer">Annonces</button>
                     <button type="button" data-onglet="candidatures" class="tab-btn px-4 py-2 rounded-t bg-white text-vert-fonce hover:bg-vert-clair cursor-pointer">Candidatures</button>
                     <button type="button" data-onglet="entreprises" class="tab-btn px-4 py-2 rounded-t bg-white text-vert-fonce hover:bg-vert-clair cursor-pointer">Entreprises</button>
                 </div>
 
-                <p id="admin-msg" class="text-sm font-semibold"></p>
-
-                <!-- TAB 1: UTILISATEURS -->
+                <!-- ================= TAB 1: UTILISATEURS ================= -->
                 <section id="tab-utilisateurs" class="tab-content flex flex-col gap-4">
-                    <div class="flex gap-3">
-                        <select id="filtre-role-user" class="border border-vert-jobleaf rounded p-1.5 bg-white text-xs">
+                    <div class="flex justify-between items-center">
+                        <select id="filtre-role-user" class="border border-vert-jobleaf rounded p-2 bg-white text-xs font-semibold">
                             <option value="">Tous les rôles</option>
                             <option value="candidat">Candidat</option>
                             <option value="entreprise">Entreprise</option>
                             <option value="admin">Admin</option>
                         </select>
+                        <button type="button" id="btn-nouveau-user" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full text-xs font-semibold hover:bg-vert-fonce cursor-pointer">
+                            + Créer un utilisateur
+                        </button>
                     </div>
+
+                    <!-- Formulaire CRUD Utilisateur (Création & Édition complète) -->
+                    <form id="form-admin-user" class="hidden bg-white p-5 rounded-lg shadow-sm border border-vert-jobleaf flex flex-col gap-3 text-xs">
+                        <h3 id="titre-form-user" class="font-playfair text-lg font-bold border-b border-vert-clair pb-1">Utilisateur</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block font-semibold mb-1">Prénom *</label>
+                                <input type="text" name="prenom" required class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Nom *</label>
+                                <input type="text" name="nom" required class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Username (3–30) *</label>
+                                <input type="text" name="username" minlength="3" maxlength="30" required class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Email *</label>
+                                <input type="email" name="email" required class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Téléphone</label>
+                                <input type="tel" name="telephone" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Rôle *</label>
+                                <select name="role" class="w-full border border-vert-jobleaf rounded p-1.5 bg-white">
+                                    <option value="candidat">candidat</option>
+                                    <option value="entreprise">entreprise</option>
+                                    <option value="admin">admin</option>
+                                </select>
+                            </div>
+                            <div id="bloc-mdp-user">
+                                <label class="block font-semibold mb-1">Mot de passe (12+ car.) *</label>
+                                <input type="password" name="password" minlength="12" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div id="bloc-nom-entr-user" class="hidden sm:col-span-2">
+                                <label class="block font-semibold mb-1">Nom de l'entreprise (si rôle entreprise) *</label>
+                                <input type="text" name="nom_entreprise" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                        </div>
+                        <p id="err-form-user" class="text-red-600 font-semibold"></p>
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full font-semibold cursor-pointer">Enregistrer</button>
+                            <button type="button" id="annuler-form-user" class="bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full cursor-pointer">Annuler</button>
+                        </div>
+                    </form>
+
                     <div class="bg-white rounded shadow-sm overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-vert-clair border-b border-vert-jobleaf">
@@ -64,6 +114,7 @@
                                     <th class="p-3">Nom & Prénom</th>
                                     <th class="p-3">Email</th>
                                     <th class="p-3">Username</th>
+                                    <th class="p-3">Téléphone</th>
                                     <th class="p-3">Rôle</th>
                                     <th class="p-3 text-right">Actions</th>
                                 </tr>
@@ -73,15 +124,104 @@
                     </div>
                 </section>
 
-                <!-- TAB 2: ANNONCES -->
+                <!-- ================= TAB 2: ANNONCES ================= -->
                 <section id="tab-annonces" class="tab-content hidden flex flex-col gap-4">
+                    <div class="flex justify-end">
+                        <button type="button" id="btn-nouvelle-annonce-admin" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full text-xs font-semibold hover:bg-vert-fonce cursor-pointer">
+                            + Créer une annonce
+                        </button>
+                    </div>
+
+                    <!-- Formulaire CRUD Annonce (Tous les champs de la table annonce) -->
+                    <form id="form-admin-annonce" class="hidden bg-white p-5 rounded-lg shadow-sm border border-vert-jobleaf flex flex-col gap-3 text-xs">
+                        <h3 id="titre-form-annonce-admin" class="font-playfair text-lg font-bold border-b border-vert-clair pb-1">Annonce</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div id="bloc-entreprise-annonce">
+                                <label class="block font-semibold mb-1">Entreprise *</label>
+                                <select name="entreprise_id" class="w-full border border-vert-jobleaf rounded p-1.5 bg-white"></select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block font-semibold mb-1">Titre *</label>
+                                <input type="text" name="titre" minlength="3" maxlength="150" required class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Type de contrat *</label>
+                                <select name="type_contrat" required class="w-full border border-vert-jobleaf rounded p-1.5 bg-white">
+                                    <option value="CDI">CDI</option>
+                                    <option value="CDD">CDD</option>
+                                    <option value="alternance">alternance</option>
+                                    <option value="stage">stage</option>
+                                    <option value="freelance">freelance</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Catégorie</label>
+                                <select name="category" class="w-full border border-vert-jobleaf rounded p-1.5 bg-white">
+                                    <option value="">-- Aucune --</option>
+                                    <option value="Informatique">Informatique</option>
+                                    <option value="Hopital">Hopital</option>
+                                    <option value="Parfumerie">Parfumerie</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Télétravail</label>
+                                <select name="teletravail" class="w-full border border-vert-jobleaf rounded p-1.5 bg-white">
+                                    <option value="">-- Aucun --</option>
+                                    <option value="sur site">sur site</option>
+                                    <option value="hybride">hybride</option>
+                                    <option value="full remote">full remote</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Ville</label>
+                                <input type="text" name="ville" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Salaire min (€)</label>
+                                <input type="number" name="salaire_min" min="0" max="1000000" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Salaire max (€)</label>
+                                <input type="number" name="salaire_max" min="0" max="1000000" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Niveau d'expérience</label>
+                                <input type="text" name="niveau_experience" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Date d'expiration</label>
+                                <input type="date" name="date_expiration" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Statut *</label>
+                                <select name="statut" class="w-full border border-vert-jobleaf rounded p-1.5 bg-white">
+                                    <option value="brouillon">brouillon</option>
+                                    <option value="publiee">publiee</option>
+                                    <option value="pourvue">pourvue</option>
+                                    <option value="expiree">expiree</option>
+                                </select>
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block font-semibold mb-1">Description (10–5000 car.) *</label>
+                                <textarea name="description" rows="4" minlength="10" maxlength="5000" required class="w-full border border-vert-jobleaf rounded p-1.5"></textarea>
+                            </div>
+                        </div>
+                        <p id="err-form-annonce-admin" class="text-red-600 font-semibold"></p>
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full font-semibold cursor-pointer">Enregistrer</button>
+                            <button type="button" id="annuler-form-annonce-admin" class="bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full cursor-pointer">Annuler</button>
+                        </div>
+                    </form>
+
                     <div class="bg-white rounded shadow-sm overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-vert-clair border-b border-vert-jobleaf">
                                 <tr>
-                                    <th class="p-3">Réf</th>
+                                    <th class="p-3 whitespace-nowrap">Référence</th>
                                     <th class="p-3">Titre</th>
+                                    <th class="p-3">Entreprise</th>
                                     <th class="p-3">Contrat</th>
+                                    <th class="p-3">Ville</th>
                                     <th class="p-3">Statut</th>
                                     <th class="p-3 text-right">Actions</th>
                                 </tr>
@@ -91,14 +231,29 @@
                     </div>
                 </section>
 
-                <!-- TAB 3: CANDIDATURES -->
+                <!-- ================= TAB 3: CANDIDATURES ================= -->
                 <section id="tab-candidatures" class="tab-content hidden flex flex-col gap-4">
+                    <div class="flex flex-wrap gap-3">
+                        <select id="filtre-statut-cand" class="border border-vert-jobleaf rounded p-2 bg-white text-xs font-semibold">
+                            <option value="">Tous les statuts</option>
+                            <option value="envoyee">envoyee</option>
+                            <option value="vue">vue</option>
+                            <option value="entretien">entretien</option>
+                            <option value="acceptee">acceptee</option>
+                            <option value="refusee">refusee</option>
+                        </select>
+                        <select id="filtre-annonce-cand" class="border border-vert-jobleaf rounded p-2 bg-white text-xs font-semibold">
+                            <option value="">Toutes les annonces</option>
+                        </select>
+                    </div>
+
                     <div class="bg-white rounded shadow-sm overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-vert-clair border-b border-vert-jobleaf">
                                 <tr>
-                                    <th class="p-3">Candidat</th>
-                                    <th class="p-3">Annonce</th>
+                                    <th class="p-3">Candidat (Nom / Email / Tél)</th>
+                                    <th class="p-3 min-w-[220px]">Annonce (Réf & Titre)</th>
+                                    <th class="p-3">Message</th>
                                     <th class="p-3">Statut</th>
                                     <th class="p-3 text-right">Actions</th>
                                 </tr>
@@ -108,8 +263,44 @@
                     </div>
                 </section>
 
-                <!-- TAB 4: ENTREPRISES -->
+                <!-- ================= TAB 4: ENTREPRISES ================= -->
                 <section id="tab-entreprises" class="tab-content hidden flex flex-col gap-4">
+                    <!-- Formulaire d'édition complète d'une entreprise -->
+                    <form id="form-admin-entreprise" class="hidden bg-white p-5 rounded-lg shadow-sm border border-vert-jobleaf flex flex-col gap-3 text-xs">
+                        <h3 id="titre-form-entreprise-admin" class="font-playfair text-lg font-bold border-b border-vert-clair pb-1">Modifier l'entreprise</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block font-semibold mb-1">Nom de l'entreprise *</label>
+                                <input type="text" name="nom_entreprise" required class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">SIRET (14 chiffres)</label>
+                                <input type="text" name="siret" maxlength="14" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Secteur</label>
+                                <input type="text" name="secteur" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1">Ville</label>
+                                <input type="text" name="ville" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block font-semibold mb-1">Site web (https://...)</label>
+                                <input type="url" name="site_web" class="w-full border border-vert-jobleaf rounded p-1.5">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block font-semibold mb-1">Description</label>
+                                <textarea name="description" rows="3" class="w-full border border-vert-jobleaf rounded p-1.5"></textarea>
+                            </div>
+                        </div>
+                        <p id="err-form-entreprise-admin" class="text-red-600 font-semibold"></p>
+                        <div class="flex gap-2">
+                            <button type="submit" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full font-semibold cursor-pointer">Enregistrer</button>
+                            <button type="button" id="annuler-form-entreprise-admin" class="bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full cursor-pointer">Annuler</button>
+                        </div>
+                    </form>
+
                     <div class="bg-white rounded shadow-sm overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-vert-clair border-b border-vert-jobleaf">
@@ -118,6 +309,7 @@
                                     <th class="p-3">SIRET</th>
                                     <th class="p-3">Secteur</th>
                                     <th class="p-3">Ville</th>
+                                    <th class="p-3">Site web</th>
                                     <th class="p-3 text-right">Actions</th>
                                 </tr>
                             </thead>

@@ -50,8 +50,28 @@ async function chargerMoi() {
 }
 
 function configurerSidebar(moi) {
+    // 1. Rend <main>, <aside> et le conteneur principal 100% responsives sur mobile
+    const main = document.querySelector('main');
+    if (main) {
+        main.className = 'flex flex-col md:flex-row flex-1 relative min-w-0';
+    }
+    const aside = document.querySelector('aside');
+    if (aside) {
+        aside.className = 'flex flex-row md:flex-col items-center justify-between md:justify-start p-3 md:pt-5 w-full md:w-[150px] md: shrink-0 bg-vert-clair md:pb-28 gap-2';
+    }
+    const photo = document.getElementById('photo-colonne');
+    if (photo) {
+        photo.className = 'w-12 h-12 md:w-[80px] md:h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf shrink-0';
+    }
+    const contenu = main?.querySelector(':scope > div');
+    if (contenu) {
+        contenu.classList.add('w-full', 'min-w-0', 'p-3', 'sm:p-6');
+    }
+
+    // 2. Génère les liens de navigation adaptés mobile (ligne) + desktop (colonne)
     const nav = document.getElementById('nav-sidebar');
     if (!nav) return;
+    nav.className = 'flex flex-row md:flex-col flex-wrap items-center md:items-start justify-end gap-3 md:gap-0 md:w-full text-xs sm:text-sm';
     nav.innerHTML = '';
 
     const liens = [
@@ -68,15 +88,14 @@ function configurerSidebar(moi) {
         a.href = l.href;
         a.textContent = l.texte;
         const actif = window.location.pathname.endsWith(l.href);
-        a.className = `self-start pl-2 mt-3 text-vert-fonce hover:underline ${actif ? 'font-bold underline' : ''}`;
+        a.className = `md:pl-2 md:mt-3 text-vert-fonce hover:underline ${actif ? 'font-bold underline' : ''}`;
         nav.append(a);
     }
 
-    
     const btnLogout = document.createElement('button');
     btnLogout.type = 'button';
     btnLogout.textContent = 'Déconnexion';
-    btnLogout.className = 'self-start pl-2 mt-6 text-sm text-red-700 hover:underline cursor-pointer font-semibold';
+    btnLogout.className = 'md:pl-2 md:mt-6 text-red-700 hover:underline cursor-pointer font-semibold';
     btnLogout.addEventListener('click', async () => {
         try {
             await appelApi('/logout', { method: 'POST' });

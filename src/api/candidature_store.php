@@ -114,16 +114,17 @@ function list_annonce_candidatures(PDO $pdo, string $annonce_id, array $paginati
 }
 
 function find_candidature_row(PDO $pdo, string $candidature_id): ?array {
-    $stmt =  $pdo->prepare(
+    $stmt = $pdo->prepare(
         'SELECT c.candidature_id, c.statut, c.date_candidature,
          (c.cv_chiffre IS NOT NULL) AS has_cv,
          c.candidat_id,
+         a.annonce_id, a.reference AS annonce_reference, a.titre AS annonce_titre,
          u.email_chiffre, u.nom_chiffre, u.prenom_chiffre, u.telephone_chiffre, a.entreprise_id,
          (SELECT m.contenu_chiffre
-         FROM message m
-         WHERE m.candidature_id = c.candidature_id
-         ORDER BY m.date_envoi, m.message_id
-         LIMIT 1) AS message_chiffre
+          FROM message m
+          WHERE m.candidature_id = c.candidature_id
+          ORDER BY m.date_envoi, m.message_id
+          LIMIT 1) AS message_chiffre
          FROM candidature c
          JOIN annonce a ON a.annonce_id = c.annonce_id
          JOIN users u ON u.user_id = c.candidat_id
@@ -170,11 +171,13 @@ function list_all_candidatures(PDO $pdo, array $filter, array $pagination): arra
         "SELECT c.candidature_id, c.statut, c.date_candidature,
                 (c.cv_chiffre IS NOT NULL) AS has_cv,
                 c.candidat_id,
+                a.annonce_id, a.reference AS annonce_reference, a.titre AS annonce_titre,
                 u.email_chiffre, u.nom_chiffre, u.prenom_chiffre, u.telephone_chiffre,
                 (SELECT m.contenu_chiffre FROM message m
                  WHERE m.candidature_id = c.candidature_id
                  ORDER BY m.date_envoi, m.message_id LIMIT 1) AS message_chiffre
          FROM candidature c
+         JOIN annonce a ON a.annonce_id = c.annonce_id
          JOIN users u ON u.user_id = c.candidat_id
          WHERE $where_sql
          ORDER BY c.date_candidature DESC, c.candidature_id DESC
@@ -186,6 +189,7 @@ function list_all_candidatures(PDO $pdo, array $filter, array $pagination): arra
     $stmt2->bindValue(':limit', $pagination['per_page'], PDO::PARAM_INT);
     $stmt2->bindValue(':offset', $pagination['offset'], PDO::PARAM_INT);
     $stmt2->execute();
+
     return ['rows' => $stmt2->fetchAll(), 'total' => $total];
 }
 

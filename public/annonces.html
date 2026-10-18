@@ -75,10 +75,10 @@
 
             <!-- Zone principale : Filtres + Cartes + Pagination -->
             <div class="flex-1 flex flex-col items-center p-6 max-w-4xl mx-auto">
-                <form id="form-search" class="w-full bg-white p-4 rounded-lg shadow-sm grid grid-cols-1 sm:grid-cols-5 gap-3 text-sm text-vert-fonce">
-                    <input type="search" name="q" placeholder="Mot-clé (min 2 car.)" class="border border-vert-jobleaf rounded px-3 py-1.5">
-                    <input type="text" name="ville" placeholder="Ville" class="border border-vert-jobleaf rounded px-3 py-1.5">
-                    <select name="type_contrat" class="border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                <form id="form-search" class="w-full bg-white p-4 rounded-lg shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 text-sm text-vert-fonce">
+                    <input type="search" name="q" placeholder="Mot-clé (min 2 car.)" class="w-full min-w-0 border border-vert-jobleaf rounded px-3 py-1.5">
+                    <input type="text" name="ville" placeholder="Ville" class="w-full min-w-0 border border-vert-jobleaf rounded px-3 py-1.5">
+                    <select name="type_contrat" class="w-full min-w-0 border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
                         <option value="">Tous contrats</option>
                         <option value="CDI">CDI</option>
                         <option value="CDD">CDD</option>
@@ -86,23 +86,21 @@
                         <option value="stage">Stage</option>
                         <option value="freelance">Freelance</option>
                     </select>
-                    <select name="category" class="border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                    <select name="category" class="w-full min-w-0 border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
                         <option value="">Toutes catégories</option>
                         <option value="Informatique">Informatique</option>
                         <option value="Hopital">Hôpital</option>
                         <option value="Parfumerie">Parfumerie</option>
                     </select>
-                    <div class="flex gap-2">
-                        <select name="teletravail" class="flex-1 border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
-                            <option value="">Télétravail</option>
-                            <option value="sur site">Sur site</option>
-                            <option value="hybride">Hybride</option>
-                            <option value="full remote">Full remote</option>
-                        </select>
-                        <button type="submit" class="bg-vert-jobleaf text-white px-4 py-1.5 rounded-full hover:bg-vert-fonce font-semibold cursor-pointer">
-                            Filtrer
-                        </button>
-                    </div>
+                    <select name="teletravail" class="w-full min-w-0 border border-vert-jobleaf rounded px-2 py-1.5 bg-white">
+                        <option value="">Télétravail</option>
+                        <option value="sur site">Sur site</option>
+                        <option value="hybride">Hybride</option>
+                        <option value="full remote">Full remote</option>
+                    </select>
+                    <button type="submit" class="w-full bg-vert-jobleaf text-white px-4 py-1.5 rounded-full hover:bg-vert-fonce font-semibold cursor-pointer">
+                        Filtrer
+                    </button>
                 </form>
 
                 <p id="message-annonces" class="mt-6 text-vert-fonce"></p>

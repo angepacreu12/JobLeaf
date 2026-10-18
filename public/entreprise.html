@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>JobLeaf - Profil Entreprise</title>
+        <link rel="icon" type="image/x-icon" href=" ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+        <style type="text/tailwindcss">
+            @theme {
+                --color-vert-jobleaf: #68923f;
+                --color-vert-clair: #d3e8b0;
+                --color-vert-fonce: rgb(37, 75, 12);
+                --color-beige-coton: #f7f2e5;
+                --font-playfair: "Playfair Display", serif;
+            }
+        </style>
+        <script src="api.js" defer></script>
+        <script src="entreprise.js" defer></script>
+    </head>
+
+    <body class="bg-beige-coton min-h-screen flex flex-col">
+        <header class="bg-vert-jobleaf min-h-[50px]">
+            <h1 class="text-white font-playfair font-extrabold text-[2rem] text-center mb-4">JobLeaf</h1>
+        </header>
+
+        <main class="flex flex-1 relative">
+            <aside class="flex flex-col items-center pt-5 min-w-[140px] bg-vert-clair pb-28">
+                <a href="profil.html" class="group">
+                    <img id="photo-colonne" src="image/avatar-defaut.png" alt="Profil"
+                         class="w-[80px] h-[80px] object-cover rounded-full border-[2px] border-vert-jobleaf">
+                </a>
+                <nav id="nav-sidebar" class="flex flex-col w-full"></nav>
+
+                <!-- Bulle message -->
+                <section id="bulle-messages"
+                         class="fixed left-4 bottom-4 z-20 w-20 h-20 rounded-full overflow-hidden bg-vert-jobleaf shadow-lg transition-all duration-300 ease-in-out">
+                    <button id="ouvrir-messages" type="button" aria-expanded="false" aria-controls="panneau-messages" aria-label="Ouvrir les conversations"
+                            class="absolute inset-0 flex items-center justify-center text-beige-coton hover:bg-vert-clair transition-colors cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-9">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                        </svg>
+                    </button>
+                    <div id="panneau-messages" class="flex h-full flex-col opacity-0 invisible transition-opacity duration-200 bg-beige-coton">
+                        <div class="flex items-center justify-between border-b border-vert-jobleaf px-4 py-3">
+                            <h2 class="font-playfair text-xl font-bold text-vert-fonce">Mes conversations</h2>
+                            <button id="fermer-messages" type="button" aria-label="Fermer mes conversations"
+                                    class="rounded-full p-1 text-vert-fonce hover:bg-vert-clair cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ul id="liste-conversations" class="flex-1 divide-y divide-vert-jobleaf overflow-y-auto"></ul>
+                        <template id="modele-conversation">
+                            <li>
+                                <a href="#" class="flex gap-3 px-4 py-3 hover:bg-vert-clair">
+                                    <span class="min-w-0 flex-1">
+                                        <span class="flex justify-between gap-2">
+                                            <span data-champ="entreprise" class="truncate font-semibold text-vert-fonce"></span>
+                                            <span data-champ="date" class="shrink-0 text-xs text-gray-500"></span>
+                                        </span>
+                                        <span data-champ="apercu" class="block truncate text-sm text-gray-600"></span>
+                                    </span>
+                                </a>
+                            </li>
+                        </template>
+                    </div>
+                </section>
+            </aside>
+
+            <div class="flex-1 p-6 max-w-4xl mx-auto text-vert-fonce flex flex-col gap-6">
+                <a href="annonces.html" class="text-sm hover:underline">&larr; Retour aux annonces</a>
+
+                <p id="etat-entreprise">Chargement...</p>
+
+                <!-- Fiche entreprise -->
+                <section id="fiche-entreprise" class="hidden bg-white rounded-lg p-6 shadow-sm flex flex-col gap-3">
+                    <div class="flex flex-wrap justify-between items-start gap-2 border-b border-vert-clair pb-3">
+                        <div>
+                            <h2 id="entr-nom" class="font-playfair text-2xl font-bold"></h2>
+                            <p id="entr-meta" class="text-sm text-gray-600 font-semibold"></p>
+                        </div>
+                        <a id="entr-site" href="#" target="_blank" rel="noopener" class="hidden text-sm bg-vert-clair px-3 py-1 rounded-full font-semibold hover:bg-vert-jobleaf hover:text-white">
+                            Visiter le site web &nearr;
+                        </a>
+                    </div>
+                    <p id="entr-desc" class="whitespace-pre-line text-sm leading-relaxed"></p>
+                </section>
+
+                <!-- Offres publiées par cette entreprise -->
+                <h3 class="font-playfair text-xl font-bold mt-2">Offres publiées par cette entreprise</h3>
+                <section id="liste-annonces-entreprise" class="flex flex-col gap-4"></section>
+
+                <template id="modele-annonce-entr">
+                    <article class="bg-white rounded-lg p-5 shadow-sm flex flex-col gap-2">
+                        <div class="flex justify-between items-start gap-2">
+                            <h4 data-champ="titre" class="font-playfair font-bold text-lg"></h4>
+                            <span data-champ="reference" class="text-xs text-gray-500"></span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span data-champ="type_contrat" class="bg-vert-clair px-2.5 py-0.5 rounded-full font-semibold"></span>
+                            <span data-champ="ville" class="bg-beige-coton px-2.5 py-0.5 rounded-full"></span>
+                        </div>
+                        <p data-champ="extrait" class="text-sm text-gray-700 mt-1"></p>
+                    </article>
+                </template>
+            </div>
+        </main>
+    </body>
+</html>
