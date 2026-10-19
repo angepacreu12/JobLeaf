@@ -4,9 +4,7 @@
 
 # ---------- Secrets (NEVER commit) ----------
 # Real keys + DB password. Only the template is versioned.
-.env
-.env.*
-!.env.example
+
 
 # ---------- PHP / Composer ----------
 # Rebuilt by "composer install" (Docker does it automatically)
@@ -26,7 +24,7 @@ venv/
 *.egg-info/
 .pytest_cache/
 vendor/
-.env
+
 vendor/
 seed/inject_report.json
 __pycache__/
@@ -63,7 +61,7 @@ desktop.ini
 *.zip
 *.tmp
 cookies.txt
-*.env.*
+
 *.locl
 composer.*
 .claude
