@@ -183,8 +183,7 @@ function handle_password_reset_request(): never {
     error_log("=== [PASSWORD RESET TOKEN for $email] === " . $reset_token);
 
     json_response(200, [
-        'status'      => 'Reset token generated (printed in console.log)',
-        'debug_token' => $reset_token,
+        'status' => 'If this account exists, a reset token has been generated in the server logs.',
     ]);
 }
 

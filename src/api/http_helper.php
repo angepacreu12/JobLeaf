@@ -41,21 +41,21 @@ function get_string(array $body, string $key): ?string {
 
 function set_session_cookie(string $token): void {
     setcookie(SESSION_COOKIE, $token, [
-    'expires'  => time() + 3600,
-    'path'     => '/',
-    'secure'   => true,
-    'httponly' => true,
-    'samesite' => 'Lax',
+        'expires'  => time() + 3600,
+        'path'     => '/',
+        'secure'   => is_https(),
+        'httponly' => true,
+        'samesite' => 'Lax',
     ]);
 }
 
 function clear_session_cookie(): void {
     setcookie(SESSION_COOKIE, "", [
-    'expires'  => time() - 3600,
-    'path'     => '/',
-    'secure'   => true,
-    'httponly' => true,
-    'samesite' => 'Lax',
+        'expires'  => time() - 3600,
+        'path'     => '/',
+        'secure'   => is_https(),
+        'httponly' => true,
+        'samesite' => 'Lax',
     ]);
 }
 
@@ -97,4 +97,15 @@ function iso_dates(array $data): array {
         }
     }
     return $data;
+}
+
+function is_https(): bool {
+    if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443) {
+        return true;
+    }
+    if (strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') {
+        return true;
+    }
+    return false;
 }
